@@ -36,10 +36,18 @@ module.exports = function(app, passport) {
 
 
     // PROFILE SECTION =====================
-    // protected so you have to be logged in to visit, using route middleware to verify
-    app.get('/profile', isLoggedIn, function(req, res) {
+    // protected section, must be logged in, using route middleware to verify
+    app.get('/profile', [isLoggedIn, redirectAdmin] , function(req, res) {
         res.render('profile.pug', {
             user : req.user // get the user out of session and pass to template
+        });
+    });
+
+
+    // ADMIN SECTION =====================
+    app.get('/admin', function(req, res) {
+        res.render('admin.pug', {
+            user : req.user
         });
     });
 
@@ -51,12 +59,17 @@ module.exports = function(app, passport) {
     });
 };
 
+
 // route middleware to make sure a user is logged in
 function isLoggedIn(req, res, next) {
-    // if user is authenticated in the session, carry on
     if (req.isAuthenticated())
         return next();
+    res.redirect('/');     // if they aren't redirect them to the home page
+}
 
-    // if they aren't redirect them to the home page
-    res.redirect('/');
+// route middleware to check if user is admin
+function redirectAdmin(req, res, next) {
+    if(!req.user.local.isAdmin)
+        return next();
+    res.redirect('/admin');
 }

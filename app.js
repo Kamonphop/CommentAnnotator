@@ -13,7 +13,11 @@ var app = express();
 
 // database connection
 var configDB = require('./config/database.js');
-var promise = mongoose.connect(configDB.url, { useMongoClient: true });
+mongoose.connect(configDB.url, { useMongoClient: true }, function(err) {
+    if(err) {
+        console.log("connection to db failed!" + err);
+    }
+});
 
 require('./config/passport')(passport); // pass passport for configuration
 

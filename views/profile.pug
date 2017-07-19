@@ -1,0 +1,7 @@
+extends layout
+
+block content
+    h1= "User profile page"
+    p Welcome, #{user.local.email}
+    p Done annotating?  
+    a(href="/logout") Log out
