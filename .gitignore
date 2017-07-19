@@ -1,2 +1,5 @@
-# Dependency directories
+# Dependencies
 node_modules/
+
+# Data
+data/
