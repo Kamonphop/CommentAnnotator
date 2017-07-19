@@ -1,3 +1,5 @@
+var Comment = require('../models/comment');
+
 module.exports = function(app, passport) {
     // HOME PAGE
     app.get('/', function(req, res) {
@@ -38,8 +40,13 @@ module.exports = function(app, passport) {
     // PROFILE SECTION =====================
     // protected section, must be logged in, using route middleware to verify
     app.get('/profile', [isLoggedIn, redirectAdmin] , function(req, res) {
-        res.render('profile.pug', {
-            user : req.user // get the user out of session and pass to template
+        Comment.find({}, 'text', (err, docs) => {
+            if(err)
+                return next(err);
+            res.render('profile.pug', {
+                user : req.user, // get the user out of session and pass to template
+                commentsList : docs
+            });
         });
     });
 

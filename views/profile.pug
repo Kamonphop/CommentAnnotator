@@ -5,3 +5,18 @@ block content
     p Welcome, #{user.local.email}
     p Done annotating?  
     a(href="/logout") Log out
+
+    h1.
+        Comments List :
+
+    form#formSurvey(name="addsurvey",method="post",action="/addsurvey")
+        ol
+            each comment in commentsList
+                li #{comment.text} 
+                    input(type="radio", name="useful")
+                    | Useful
+                    input(type="radio", name="discard") 
+                    | Non-useful
+                br
+        button#btnSubmit(type="submit") submit
+                
