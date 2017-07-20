@@ -1,12 +1,12 @@
 extends layout
 
 block content
-    h1= "User profile page"
+    h4= "User profile page"
     p Welcome, #{user.local.email}
     p Done annotating?  
     a(href="/logout") Log out
 
-    h1.
+    h4.
         Comments List :
 
     form#formSurvey(name="addsurvey",method="post",action="/addsurvey")

@@ -1,7 +1,36 @@
 doctype html
 html
-  head
-    title= title
-    link(rel='stylesheet', href='/stylesheets/style.css')
-  body
-    block content
+	head
+		title = title
+		link(rel='stylesheet', href='/stylesheets/bootstrap.css')
+		link(rel='stylesheet', href='/stylesheets/style.css')
+	body
+		nav.navbar.navbar-toggleable-md.navbar-inverse.bg-inverse.fixed-top
+			button.navbar-toggler.navbar-toggler-right(type='button', data-toggle='collapse', data-target='#navbarSupportedContent', aria-controls='navbarSupportedContent', aria-expanded='false', aria-label='Toggle navigation')
+				span.navbar-toggler-icon
+			a.navbar-brand(href='#') CSSE Annotator
+			#navbarSupportedContent.collapse.navbar-collapse
+				ul.navbar-nav.mr-auto
+					li.nav-item.active
+						a.nav-link(href='#')
+							| Home 
+							span.sr-only (current)
+				ul.navbar-nav.ml-auto
+					if user
+						li.nav-item.dropdown
+							a#navbarDropdownMenuLink.nav-link.dropdown-toggle(href='http://example.com', data-toggle='dropdown', aria-haspopup='true', aria-expanded='false')
+								| Hi! #{user.local.email}
+							.dropdown-menu(aria-labelledby='navbarDropdownMenuLink')
+								a.dropdown-item(href='#') Profile
+								a.dropdown-item(href='#') Logout
+					else
+						li.nav-item
+							| Please login
+		.container
+			block content
+		script(src="/js/jquery-3.2.1.min.js")
+		script(src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js")
+		script(src="/js/bootstrap.min.js")
+		script
+			| var bootstrap_enabled = (typeof $().modal == 'function');
+			| console.log(bootstrap_enabled)

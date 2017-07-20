@@ -52,6 +52,7 @@ module.exports = function(app, passport) {
 
 
     // ADMIN SECTION =====================
+    // TODO: do I need to use isLoggedIn here too?
     app.get('/admin', function(req, res) {
         res.render('admin.pug', {
             user : req.user
