@@ -1,0 +1,34 @@
+extends layout
+
+block content
+    //-
+        h4= "User profile page"
+        p Welcome, #{user.local.email}
+        p Done annotating?  
+        a(href="/logout") Log out
+
+    h3.
+        Review:
+
+    .row
+        .col-sm-8
+            h4.
+                Text Area:
+            #wrap
+                textarea hello stack overflow world textarea hello stack overflow worldhello stack overflow world textarea hello stack overflow worldhello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world 
+        .col-sm-4
+            h4.
+                Labels:
+
+    //-
+        form#formSurvey(name="addsurvey",method="post",action="/addsurvey")
+        ol
+            each comment in commentsList
+                li #{comment.text} 
+                    input(type="radio", name="useful")
+                    | Useful
+                    input(type="radio", name="discard") 
+                    | Non-useful
+                br
+        button#btnSubmit(type="submit") submit
+                

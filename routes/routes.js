@@ -16,11 +16,11 @@ module.exports = function(app, passport) {
 
     // process the login form
     app.post('/login', passport.authenticate('local-login', {
-          successRedirect : '/profile', // redirect to the secure profile section
+          // successRedirect : '/profile', // redirect to the secure profile section
+          successRedirect : '/home',
           failureRedirect : '/login', // redirect back to the signup page if there is an error
           failureFlash : true
     }));
-
 
     // SIGNUP ==============================
     // show the signup form
@@ -31,7 +31,8 @@ module.exports = function(app, passport) {
 
     // process the signup form
     app.post('/signup', passport.authenticate('local-signup', {
-        successRedirect : '/profile',
+        // successRedirect : '/profile',
+        successRedirect: '/home',
         failureRedirect : '/signup',
         failureFlash : true
     }));
@@ -50,6 +51,28 @@ module.exports = function(app, passport) {
         });
     });
 
+    app.get('/home', [isLoggedIn], function(req,res){
+        res.render('home.pug',{
+            user: req.user,
+        })
+    });
+
+    app.get('/amzreviews', [isLoggedIn], function(req,res){
+        res.render('amzreviews.pug',{
+            user: req.user,
+        })
+    });
+
+    app.get('/codecomments', [isLoggedIn], function(req,res){
+        Comment.find({}, 'text', (err, docs) => {
+            if(err)
+                return next(err);
+            res.render('codecomments.pug',{
+                user: req.user,
+                commentsList: docs
+            });
+        });
+    });
 
     // ADMIN SECTION =====================
     // TODO: do I need to use isLoggedIn here too?
