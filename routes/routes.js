@@ -40,7 +40,7 @@ module.exports = function(app, passport) {
 
     // PROFILE SECTION =====================
     // protected section, must be logged in, using route middleware to verify
-    app.get('/profile', [isLoggedIn, redirectAdmin] , function(req, res) {
+    app.get('/profile', [isLoggedIn] , function(req, res) {
         Comment.find({}, 'text', (err, docs) => {
             if(err)
                 return next(err);
@@ -75,11 +75,20 @@ module.exports = function(app, passport) {
     });
 
     // ADMIN SECTION =====================
-    // TODO: do I need to use isLoggedIn here too?
-    app.get('/admin', function(req, res) {
-        res.render('admin.pug', {
-            user : req.user
-        });
+    // TODO: need to do some error message upon redirect
+    app.get('/admin', [isLoggedIn],function(req, res) {
+        if(req.user.local.isAdmin){
+            res.render('admin.pug', {
+                user : req.user
+            });
+        }
+        else{
+            res.redirect('/home')
+        }
+            // res.render('home.pug',{
+            //     user: req.user,
+            //     error: "denied"
+            // });
     });
 
 

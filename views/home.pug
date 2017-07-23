@@ -1,6 +1,8 @@
 extends layout
 
 block content
+    if error
+        span.badge.badge-danger Access Denied
     h4.
         Welcome! #{user.local.email}
     h3.
