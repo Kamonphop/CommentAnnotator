@@ -5,19 +5,24 @@ block content
         Review:
 
     .col-sm-12
-        p
-            strong Product Name:
-            | Blah blah
-            br
-            strong Ratings:
-            | Blah blah
-            br
-            strong Summary:
-            | Blah Blah
+        each review in reviews
+            p
+                strong Product Name: 
+                | #{review.asin}
+                br
+                strong Ratings: 
+                | #{review.ratings}
+                br
+                strong Summary: 
+                | #{review.summary}
 
-        #wrap
-            textarea hello stack overflow world textarea hello stack overflow worldhello stack overflow world textarea hello stack overflow worldhello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world hello stack overflow world textarea hello stack overflow world 
+            #wrap
+                textarea #{review.reviewText}
     br
     h3.
         Label:
     .col-sm-12
+        ol
+            each review in reviews
+                li #{review.summary} 
+                br

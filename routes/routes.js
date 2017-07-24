@@ -1,4 +1,5 @@
 var Comment = require('../models/comment');
+var Amzreviews = require('../models/amzreview');
 
 module.exports = function(app, passport) {
     // HOME PAGE
@@ -58,9 +59,13 @@ module.exports = function(app, passport) {
     });
 
     app.get('/amzreviews', [isLoggedIn], function(req,res){
-        res.render('amzreviews.pug',{
-            user: req.user,
-        })
+        //randomly select x review(s)
+        Amzreviews.aggregate([{$sample: {size: 1}}],function(err,reviews){
+            res.render('amzreviews.pug',{
+                user: req.user,
+                reviews: reviews
+            });
+        });
     });
 
     app.get('/codecomments', [isLoggedIn], function(req,res){
