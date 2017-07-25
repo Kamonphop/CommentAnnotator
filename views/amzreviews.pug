@@ -3,20 +3,25 @@ extends layout
 block content
     h3.
         Original Review:
-
+    .row
+        .col-sm-8
+            //each review in reviews
+            p
+                strong Product Asin: 
+                | #{review.asin}
+                | #{review._id}
+                br
+                strong Ratings: 
+                | #{review.ratings} out of 5
+                br
+                strong Summary: 
+                | #{review.summary}
+        .col-sm-4
+            .alert.alert-info(role='alert').float-right
+                |  Annotated 
+                span.badge.badge-pill.badge-primary #{done_many}
+                |  out of 10 reviews
     .col-sm-12
-        //each review in reviews
-        p
-            strong Product Asin: 
-            | #{review.asin}
-            | #{review._id}
-            br
-            strong Ratings: 
-            | #{review.ratings} out of 5
-            br
-            strong Summary: 
-            | #{review.summary}
-
         #wrap
             textarea(readonly='') #{review.reviewText}
         //| #{review.reviewText.match(/([\s]+)/g).length}

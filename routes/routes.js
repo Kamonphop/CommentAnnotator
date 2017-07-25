@@ -1,8 +1,9 @@
 var Comment = require('../models/comment');
 var Amzreviews = require('../models/amzreview');
+var Amzlabels = require('../models/amzlabel');
 
 /*for data tokenizer*/
-var Tokenizer    = require('sentence-tokenizer');
+var Tokenizer = require('sentence-tokenizer');
 var tokenizer = new Tokenizer('Chuck');
 
 module.exports = function(app, passport) {
@@ -62,16 +63,23 @@ module.exports = function(app, passport) {
         })
     });
 
+    //TODO: assign user to certain review, now is random
     app.get('/amzreviews', [isLoggedIn], function(req,res){
         //randomly select x review(s)
         Amzreviews.aggregate([{$sample: {size: 1}}],function(err,reviews){
-            review = reviews[0];
-            tokenizer.setEntry(review.reviewText);
-            sentences = tokenizer.getSentences();
-            res.render('amzreviews.pug',{
-                user: req.user,
-                reviews: review,
-                sentences: sentences
+            Amzlabels.find({user_id: req.user._id}).distinct('review_id', function(err,data){
+                if(err)
+                    return next(err);
+                done_num = data.length;
+                review = reviews[0];
+                tokenizer.setEntry(review.reviewText);
+                sentences = tokenizer.getSentences();
+                res.render('amzreviews.pug',{
+                    user: req.user,
+                    reviews: review,
+                    sentences: sentences,
+                    done_many: done_num
+                });
             });
         });
     });
@@ -89,19 +97,10 @@ module.exports = function(app, passport) {
 
     // ADMIN SECTION =====================
     // TODO: need to do some error message upon redirect
-    app.get('/admin', [isLoggedIn],function(req, res) {
-        if(req.user.local.isAdmin){
-            res.render('admin.pug', {
-                user : req.user
-            });
-        }
-        else{
-            res.redirect('/home')
-        }
-            // res.render('home.pug',{
-            //     user: req.user,
-            //     error: "denied"
-            // });
+    app.get('/admin', [isLoggedIn,redirectifnotAdmin],function(req, res) {
+        res.render('admin.pug', {
+            user : req.user
+        });
     });
 
 
@@ -112,22 +111,30 @@ module.exports = function(app, passport) {
     });
 
     //submit label
+    //TODO: adding a flash message upon successfully added
     app.post('/amzreview-submit',function(req,res,next){
         var data = req.body;
-        var user_submission = {};
-        var user_id = data.user_id;
-        var review_id = data.review_id;
-        user_submission["user_id"] = user_id;
-        user_submission["review_id"] = review_id
-        label = {};
+        var all_label = [];
         for(var attributename in data){
             if (attributename == "user_id" || attributename == "review_id")
                 continue;
+            var label = {};
             label[attributename] = data[attributename]
+            all_label.push(label);
         }
-        user_submission["sent_labels"] = label
-        res.redirect('back')
-        console.log(user_submission)
+        //save to the db
+        var newlabel = new Amzlabels({});
+        newlabel.user_id = data.user_id;
+        newlabel.review_id = data.review_id;
+        newlabel.sent_labels = all_label;
+        newlabel.save(function(err){
+            if(err)
+                res.send(err);
+            else{
+                console.log("save");
+                res.redirect('back');
+            }
+        });
     });
 };
 
@@ -139,9 +146,14 @@ function isLoggedIn(req, res, next) {
     res.redirect('/');     // if they aren't redirect them to the home page
 }
 
-// route middleware to check if user is admin
-function redirectAdmin(req, res, next) {
-    if(!req.user.local.isAdmin)
+function redirectifnotAdmin(req, res, next) {
+    if(req.user.local.isAdmin){
+        console.log("admin is here! granted access");
         return next();
-    res.redirect('/admin');
+    }
+    else{
+        console.log("not an admin, go back!");
+        res.redirect('back');
+    }
 }
+

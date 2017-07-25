@@ -1,7 +1,7 @@
 var mongoose = require('mongoose');
 var bcrypt   = require('bcrypt-nodejs');
-
-// define the schema for our comment model
+mongoose.Promise = global.Promise;
+// define the schema for our Amazon review model
 var amzReviewSchema = mongoose.Schema({
     asin : String,
     ratings : String,

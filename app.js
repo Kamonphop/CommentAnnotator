@@ -13,9 +13,13 @@ var app = express();
 
 // database connection
 var configDB = require('./config/database.js');
+mongoose.Promise = global.Promise;
 mongoose.connect(configDB.url, { useMongoClient: true }, function(err) {
     if(err) {
         console.log("connection to db failed!" + err);
+    }
+    else{
+      console.log("connected to the database");
     }
 });
 
