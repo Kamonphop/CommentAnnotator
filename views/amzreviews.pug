@@ -2,27 +2,60 @@ extends layout
 
 block content
     h3.
-        Review:
+        Original Review:
 
     .col-sm-12
-        each review in reviews
-            p
-                strong Product Name: 
-                | #{review.asin}
-                br
-                strong Ratings: 
-                | #{review.ratings}
-                br
-                strong Summary: 
-                | #{review.summary}
+        //each review in reviews
+        p
+            strong Product Asin: 
+            | #{review.asin}
+            | #{review._id}
+            br
+            strong Ratings: 
+            | #{review.ratings} out of 5
+            br
+            strong Summary: 
+            | #{review.summary}
 
-            #wrap
-                textarea #{review.reviewText}
+        #wrap
+            textarea(readonly='') #{review.reviewText}
+        //| #{review.reviewText.match(/([\s]+)/g).length}
     br
     h3.
         Label:
     .col-sm-12
-        ol
-            each review in reviews
-                li #{review.summary} 
-                br
+        br
+        form#formSurvey(name="submit-review",method="post",action="/amzreview-submit")
+            input(type="hidden" name="user_id" value=user._id)
+            input(type="hidden" name="review_id" value=review._id)
+            .divTable
+                .divTableBody
+                    .divTableRow
+                        .divTableCell.numbercell
+                            strong #
+                        .divTableCell.classifysentence
+                            strong Sentence
+                        .divTableCell.label
+                            strong Label
+                    each sentence, i in sentences
+                        .divTableRow
+                            .divTableCell.numbercell
+                                = i+1
+                            .divTableCell.classifysentence
+                                | #{sentence}
+                            .divTableCell.label
+                                .custom-controls-stacked
+                                    label.custom-control.custom-radio
+                                        input#radioStacked1.custom-control-input(name='sent_'+(i+1), type='radio', value='0')
+                                        span.custom-control-indicator
+                                        span.custom-control-description Other
+                                    label.custom-control.custom-radio
+                                        input#radioStacked2.custom-control-input(name='sent_'+(i+1), type='radio', value='1')
+                                        span.custom-control-indicator
+                                        span.custom-control-description Software
+                                    label.custom-control.custom-radio
+                                        input#radioStacked2.custom-control-input(name='sent_'+(i+1), type='radio', value='2')
+                                        span.custom-control-indicator
+                                        span.custom-control-description Hardware
+            br
+            button#btnSubmit(type="submit") submit

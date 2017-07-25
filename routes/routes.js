@@ -1,6 +1,10 @@
 var Comment = require('../models/comment');
 var Amzreviews = require('../models/amzreview');
 
+/*for data tokenizer*/
+var Tokenizer    = require('sentence-tokenizer');
+var tokenizer = new Tokenizer('Chuck');
+
 module.exports = function(app, passport) {
     // HOME PAGE
     app.get('/', function(req, res) {
@@ -61,9 +65,13 @@ module.exports = function(app, passport) {
     app.get('/amzreviews', [isLoggedIn], function(req,res){
         //randomly select x review(s)
         Amzreviews.aggregate([{$sample: {size: 1}}],function(err,reviews){
+            review = reviews[0];
+            tokenizer.setEntry(review.reviewText);
+            sentences = tokenizer.getSentences();
             res.render('amzreviews.pug',{
                 user: req.user,
-                reviews: reviews
+                reviews: review,
+                sentences: sentences
             });
         });
     });
@@ -101,6 +109,26 @@ module.exports = function(app, passport) {
     app.get('/logout', function(req, res) {
         req.logout();
         res.redirect('/');
+    });
+
+    //submit label
+    app.post('/amzreview-submit',function(req,res,next){
+        data = req.body;
+        all_item = [];
+        user_id = data.user_id;
+        review_id = data.review_id;
+        for(var attributename in data){
+            if (attributename == "user_id" || attributename == "review_id")
+                continue;
+            each_sentence = [];
+            each_sentence.push(user_id)
+            each_sentence.push(review_id)
+            each_sentence.push(attributename)
+            each_sentence.push(data[attributename])
+            all_item.push(each_sentence);
+        }
+        console.log(all_item)
+        res.redirect('back')
     });
 };
 

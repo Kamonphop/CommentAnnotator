@@ -14,8 +14,46 @@ body {
 textarea{
   resize: none;
   width: 100%;
-  padding: 10px;
+  padding: 5px;
 /*  border: none;*/
   height: 100%;
-  margin: -10px;
+/*  margin: -5px;*/
+}
+/* DivTable.com */
+.divTable{
+  display: table;
+  width: 100%;
+}
+.divTableRow {
+  display: table-row;
+}
+.divTableHeading {
+  background-color: #EEE;
+  display: table-header-group;
+}
+.divTableCell, .divTableHead {
+  border: 1px solid #999999;
+  display: table-cell;
+  padding: 3px 10px;
+}
+.divTableHeading {
+  background-color: #EEE;
+  display: table-header-group;
+  font-weight: bold;
+}
+.divTableFoot {
+  background-color: #EEE;
+  display: table-footer-group;
+  font-weight: bold;
+}
+.divTableBody {
+  display: table-row-group;
+}
+.classifysentence{
+  width: 800px;
+}
+.numbercell{
+  text-align: center;
+  max-width: 40px;
+  width:40px;
 }
