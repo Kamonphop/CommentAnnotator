@@ -113,22 +113,21 @@ module.exports = function(app, passport) {
 
     //submit label
     app.post('/amzreview-submit',function(req,res,next){
-        data = req.body;
-        all_item = [];
-        user_id = data.user_id;
-        review_id = data.review_id;
+        var data = req.body;
+        var user_submission = {};
+        var user_id = data.user_id;
+        var review_id = data.review_id;
+        user_submission["user_id"] = user_id;
+        user_submission["review_id"] = review_id
+        label = {};
         for(var attributename in data){
             if (attributename == "user_id" || attributename == "review_id")
                 continue;
-            each_sentence = [];
-            each_sentence.push(user_id)
-            each_sentence.push(review_id)
-            each_sentence.push(attributename)
-            each_sentence.push(data[attributename])
-            all_item.push(each_sentence);
+            label[attributename] = data[attributename]
         }
-        console.log(all_item)
+        user_submission["sent_labels"] = label
         res.redirect('back')
+        console.log(user_submission)
     });
 };
 
