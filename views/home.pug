@@ -1,8 +1,10 @@
 extends layout
 
 block content
-    if error
-        span.badge.badge-danger Access Denied
+    if errorMessage.length > 0
+        .alert.alert-danger.alert-dismissable
+            a.close(href='#', data-dismiss='alert', aria-label='close') ×
+            strong #{errorMessage}
     h4.
         Welcome! #{user.local.email}
     h3.

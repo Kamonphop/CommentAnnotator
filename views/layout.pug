@@ -1,7 +1,7 @@
 doctype html
 html
 	head
-		title=title
+		title= 'CSSE Annotator'
 		link(rel='stylesheet', href='/stylesheets/bootstrap.css')
 		link(rel='stylesheet', href='/stylesheets/style.css')
 	body
@@ -27,11 +27,10 @@ html
 								a.dropdown-item(href='/logout') Logout
 					else
 						li.nav-item
-							| Please login
+							a.nav-link(href='/login') Please Login
 		.container
 			block content
 		script(src="/js/jquery-3.2.1.min.js")
 		script(src="https://npmcdn.com/tether@1.2.4/dist/js/tether.min.js")
 		script(src="/js/bootstrap.min.js")
-		script
-			| $("textarea").height( $("textarea")[0].scrollHeight );
+		block javascript

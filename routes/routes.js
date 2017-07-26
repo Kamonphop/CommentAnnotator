@@ -43,6 +43,12 @@ module.exports = function(app, passport) {
         failureFlash : true
     }));
 
+    // LOGOUT ==============================
+    app.get('/logout', function(req, res) {
+        req.logout();
+        res.redirect('/');
+    });
+
 
     // PROFILE SECTION =====================
     // protected section, must be logged in, using route middleware to verify
@@ -60,10 +66,12 @@ module.exports = function(app, passport) {
     app.get('/home', [isLoggedIn], function(req,res){
         res.render('home.pug',{
             user: req.user,
+            errorMessage: req.flash('error')
         })
     });
 
     //TODO: assign user to certain review, now is random
+    //TODO: might need to also check if users has already done this review, randomly select another review
     app.get('/amzreviews', [isLoggedIn], function(req,res){
         //randomly select x review(s)
         Amzreviews.aggregate([{$sample: {size: 1}}],function(err,reviews){
@@ -78,7 +86,9 @@ module.exports = function(app, passport) {
                     user: req.user,
                     reviews: review,
                     sentences: sentences,
-                    done_many: done_num
+                    done_many: done_num,
+                    errorMessage: req.flash('error'),
+                    successMessage: req.flash('success')
                 });
             });
         });
@@ -96,18 +106,12 @@ module.exports = function(app, passport) {
     });
 
     // ADMIN SECTION =====================
-    // TODO: need to do some error message upon redirect
     app.get('/admin', [isLoggedIn,redirectifnotAdmin],function(req, res) {
+        req.flash('success','Test flash message.');
         res.render('admin.pug', {
-            user : req.user
+            user : req.user,
+            successMessage: req.flash('success')
         });
-    });
-
-
-    // LOGOUT ==============================
-    app.get('/logout', function(req, res) {
-        req.logout();
-        res.redirect('/');
     });
 
     //submit label
@@ -132,6 +136,7 @@ module.exports = function(app, passport) {
                 res.send(err);
             else{
                 console.log("save");
+                req.flash('success','Saved to the database successfully')
                 res.redirect('back');
             }
         });
@@ -143,7 +148,10 @@ module.exports = function(app, passport) {
 function isLoggedIn(req, res, next) {
     if (req.isAuthenticated())
         return next();
-    res.redirect('/');     // if they aren't redirect them to the home page
+    else{
+        console.log("not logged in");
+        res.redirect('/');// if they aren't redirect them to the home page
+    }
 }
 
 function redirectifnotAdmin(req, res, next) {
@@ -153,7 +161,8 @@ function redirectifnotAdmin(req, res, next) {
     }
     else{
         console.log("not an admin, go back!");
-        res.redirect('back');
+        req.flash('error','You are not authorized!');
+        res.redirect('/home');
     }
 }
 

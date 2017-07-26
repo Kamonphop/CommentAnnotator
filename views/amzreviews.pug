@@ -1,6 +1,14 @@
 extends layout
 
 block content
+    if errorMessage.length > 0
+        .alert.alert-danger.alert-dismissable
+            a.close(href='#', data-dismiss='alert', aria-label='close') ×
+            strong #{errorMessage}
+    if successMessage.length > 0
+        .alert.alert-success.alert-dismissable
+            a.close(href='#', data-dismiss='alert', aria-label='close') ×
+            strong #{successMessage}
     h3.
         Original Review:
     .row
@@ -27,7 +35,7 @@ block content
         //| #{review.reviewText.match(/([\s]+)/g).length}
     br
     h3.
-        Label:
+        Add Labels:
     .col-sm-12
         br
         form#formSurvey(name="submit-review",method="post",action="/amzreview-submit")
@@ -49,18 +57,22 @@ block content
                             .divTableCell.classifysentence
                                 | #{sentence}
                             .divTableCell.label
-                                .custom-controls-stacked
-                                    label.custom-control.custom-checkbox
-                                        input#checkboxStacked1.custom-control-input(name='sent_'+(i+1), type='checkbox', value='0')
-                                        span.custom-control-indicator
-                                        span.custom-control-description Other
-                                    label.custom-control.custom-checkbox
-                                        input#checkboxStacked2.custom-control-input(name='sent_'+(i+1), type='checkbox', value='1')
-                                        span.custom-control-indicator
-                                        span.custom-control-description Software
-                                    label.custom-control.custom-checkbox
-                                        input#checkboxStacked3.custom-control-input(name='sent_'+(i+1), type='checkbox', value='2')
-                                        span.custom-control-indicator
-                                        span.custom-control-description Hardware
+                                .form-check
+                                    label.form-check-label
+                                        input.form-check-input(name='sent_'+(i+1), type='checkbox', value='0')
+                                        |     Other
+                                .form-check
+                                    label.form-check-label
+                                        input.form-check-input(name='sent_'+(i+1), type='checkbox', value='1')
+                                        |     Software
+                                .form-check
+                                    label.form-check-label
+                                        input.form-check-input(name='sent_'+(i+1), type='checkbox', value='2')
+                                        |     Hardware
             br
-            button#btnSubmit(type="submit") submit
+            button.btn.btn-primary(type='submit') Submit
+block javascript
+    script
+        | $("textarea").height( $("textarea")[0].scrollHeight );
+    script
+        | console.log("test");
