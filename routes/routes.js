@@ -118,28 +118,30 @@ module.exports = function(app, passport) {
     //TODO: adding a flash message upon successfully added
     app.post('/amzreview-submit',function(req,res,next){
         var data = req.body;
-        var all_label = [];
-        for(var attributename in data){
-            if (attributename == "user_id" || attributename == "review_id")
-                continue;
-            var label = {};
-            label[attributename] = data[attributename]
-            all_label.push(label);
-        }
-        //save to the db
-        var newlabel = new Amzlabels({});
-        newlabel.user_id = data.user_id;
-        newlabel.review_id = data.review_id;
-        newlabel.sent_labels = all_label;
-        newlabel.save(function(err){
-            if(err)
-                res.send(err);
-            else{
-                console.log("save");
-                req.flash('success','Saved to the database successfully')
-                res.redirect('back');
-            }
-        });
+        console.log(data);
+        res.redirect('back');
+        // var all_label = [];
+        // for(var attributename in data){
+        //     if (attributename == "user_id" || attributename == "review_id")
+        //         continue;
+        //     var label = {};
+        //     label[attributename] = data[attributename]
+        //     all_label.push(label);
+        // }
+        // //save to the db
+        // var newlabel = new Amzlabels({});
+        // newlabel.user_id = data.user_id;
+        // newlabel.review_id = data.review_id;
+        // newlabel.sent_labels = all_label;
+        // newlabel.save(function(err){
+        //     if(err)
+        //         res.send(err);
+        //     else{
+        //         console.log("save");
+        //         req.flash('success','Saved to the database successfully')
+        //         res.redirect('back');
+        //     }
+        // });
     });
 };
 

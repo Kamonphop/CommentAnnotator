@@ -38,7 +38,7 @@ block content
         Add Labels:
     .col-sm-12
         br
-        form#formSurvey(name="submit-review",method="post",action="/amzreview-submit")
+        form(name="submit-review",method="post",action="/amzreview-submit", onsubmit="return check_checkboxes()")
             input(type="hidden" name="user_id" value=user._id)
             input(type="hidden" name="review_id" value=review._id)
             .divTable
@@ -59,20 +59,54 @@ block content
                             .divTableCell.label
                                 .form-check
                                     label.form-check-label
-                                        input.form-check-input(name='sent_'+(i+1), type='checkbox', value='0')
+                                        input.form-check-input(name='sent_'+(i+1), type='checkbox', value='0', id='sent_'+(i+1)+'_cat_0')
                                         |     Other
+                                        br
+                                        .card.choice_hidden(class='choice_for_sent_'+(i+1)+'_cat_0', style="padding: 0px 10px 0px 10px;")
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_0', type='checkbox', value='0')
+                                                |     Choice 1 for 0
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_0', type='checkbox', value='1')
+                                                |     Choice 2 for 0 
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_0', type='checkbox', value='2')
+                                                |     Choice 3 for 0
                                 .form-check
                                     label.form-check-label
-                                        input.form-check-input(name='sent_'+(i+1), type='checkbox', value='1')
+                                        input.form-check-input(name='sent_'+(i+1), type='checkbox', value='1', id='sent_'+(i+1)+'_cat_1')
                                         |     Software
+                                        br
+                                        .card.choice_hidden(class='choice_for_sent_'+(i+1)+'_cat_1', style="padding: 0px 10px 0px 10px;")
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_1', type='checkbox', value='0')
+                                                |     Choice 1 for 1
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_1', type='checkbox', value='1')
+                                                |     Choice 2 for 1
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_1', type='checkbox', value='2')
+                                                |     Choice 3 for 1
                                 .form-check
                                     label.form-check-label
-                                        input.form-check-input(name='sent_'+(i+1), type='checkbox', value='2')
+                                        input.form-check-input(name='sent_'+(i+1), type='checkbox', value='2', id='sent_'+(i+1)+'_cat_2')
                                         |     Hardware
+                                        br
+                                        .card.choice_hidden(class='choice_for_sent_'+(i+1)+'_cat_2', style="padding: 0px 10px 0px 10px;")
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_2', type='checkbox', value='0')
+                                                |     Choice 1 for 2
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_2', type='checkbox', value='1')
+                                                |     Choice 2 for 2
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_2', type='checkbox', value='2')
+                                                |     Choice 3 for 2
             br
+            
+            .alert.alert-danger-alt.collapse(id="error")
             button.btn.btn-primary(type='submit') Submit
 block javascript
     script
-        | $("textarea").height( $("textarea")[0].scrollHeight );
-    script
-        | console.log("test");
+        | $("textarea").height( $("textarea")[0].scrollHeight);
+    script(src="/js/amzreviewpage.js")
