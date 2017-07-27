@@ -57,5 +57,5 @@ textarea{
   max-width: 40px;
   width:40px;
 }
-.alert-danger-alt { border-color: #B63E5A;background: #E26868;color: #fff; }
-.alert-success-alt { border-color: #19B99A;background: #20A286;color: #fff; }
+.alert-danger-alt { border-color: #E26868;background: #E26868;color: #fff; }
+.alert-success-alt { border-color: #74b981;background:#74b981;color: #fff; }

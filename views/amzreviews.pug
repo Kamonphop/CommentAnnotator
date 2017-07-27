@@ -2,11 +2,11 @@ extends layout
 
 block content
     if errorMessage.length > 0
-        .alert.alert-danger.alert-dismissable
+        .alert.alert-danger-alt.alert-dismissable
             a.close(href='#', data-dismiss='alert', aria-label='close') ×
             strong #{errorMessage}
     if successMessage.length > 0
-        .alert.alert-success.alert-dismissable
+        .alert.alert-success-alt.alert-dismissable
             a.close(href='#', data-dismiss='alert', aria-label='close') ×
             strong #{successMessage}
     h3.

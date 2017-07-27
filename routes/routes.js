@@ -115,33 +115,63 @@ module.exports = function(app, passport) {
     });
 
     //submit label
-    //TODO: adding a flash message upon successfully added
+    //TODO: add sub category when saved and also emotion
     app.post('/amzreview-submit',function(req,res,next){
         var data = req.body;
-        console.log(data);
-        res.redirect('back');
-        // var all_label = [];
-        // for(var attributename in data){
-        //     if (attributename == "user_id" || attributename == "review_id")
-        //         continue;
-        //     var label = {};
-        //     label[attributename] = data[attributename]
-        //     all_label.push(label);
-        // }
-        // //save to the db
-        // var newlabel = new Amzlabels({});
-        // newlabel.user_id = data.user_id;
-        // newlabel.review_id = data.review_id;
-        // newlabel.sent_labels = all_label;
-        // newlabel.save(function(err){
-        //     if(err)
-        //         res.send(err);
-        //     else{
-        //         console.log("save");
-        //         req.flash('success','Saved to the database successfully')
-        //         res.redirect('back');
-        //     }
-        // });
+        // Below is for debugging
+        // var data = { user_id: '597078f55d06cd4c7488b48d',
+        //           review_id: '5975aa1b3f3ccf5a0bb15904',
+        //           sent_1: '1',
+        //           sent_1_cat_1: '1',
+        //           sent_2: '1',
+        //           sent_2_cat_1: '1',
+        //           sent_3: '0',
+        //           sent_3_cat_0: '1',
+        //           sent_4: '1',
+        //           sent_4_cat_1: '1',
+        //           sent_5: '1',
+        //           sent_5_cat_1: '1',
+        //           sent_6: '1',
+        //           sent_6_cat_1: [ '1', '2' ],
+        //           sent_7: [ '1', '2' ],
+        //           sent_7_cat_1: '1',
+        //           sent_7_cat_2: '1',
+        //           sent_8: '2',
+        //           sent_8_cat_2: [ '1', '2' ],
+        //           sent_9: '2',
+        //           sent_9_cat_2: '1' }
+        var sent_cat = [];
+        var sent_sub_cat = [];
+        for(var attributename in data){
+            if (attributename == "user_id" || attributename == "review_id")
+                continue;
+            if (~attributename.indexOf('cat')){
+                var label_cat = {};
+                label_cat[attributename] = data[attributename]
+                sent_sub_cat.push(label_cat);
+            }
+            else
+            {
+                var label = {};
+                label[attributename] = data[attributename]
+                sent_cat.push(label);
+            }
+        }
+        //save to the db
+        var newlabel = new Amzlabels({});
+        newlabel.user_id = data.user_id;
+        newlabel.review_id = data.review_id;
+        newlabel.sent_labels = sent_cat;
+        newlabel.sent_sub_cats = sent_sub_cat;
+        newlabel.save(function(err){
+            if(err)
+                res.send(err);
+            else{
+                console.log("Data saved");
+                req.flash('success','Saved to the database successfully')
+                res.redirect('back');
+            }
+        });
     });
 };
 

@@ -22,6 +22,7 @@ function showMoreOption(x){
 function check_checkboxes(){
 	var rv = true;
 	//check if at least one cat is selected for each checkbox.
+	//Commented out for debugging
 	for(var i = 1; i < num_sentence; i++){
 		var checkboxCat= "input[name='sent_"+i+"']:checked";
 		//the checkbox is checked
@@ -35,13 +36,13 @@ function check_checkboxes(){
 			});
 		}
 		else{
-			$('#error').text('Please select at least one category for each sentence!');
+			$('#error').text('Error! please select at least one category for each sentence!');
 			$('#error').show();
 			return false;
 		}
 	}
 	if(!rv){
-		 $('#error').text('Please select at least one option for each category!');
+		 $('#error').text('Error! please select at least one option for each category!');
 		 $('#error').show();
 	}
 	return rv;

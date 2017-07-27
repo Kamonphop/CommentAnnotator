@@ -12,6 +12,7 @@ var amzLabelSchema = new Schema({
     user_id : {type: Schema.Types.ObjectId, ref: 'Users'},
     review_id : {type: Schema.Types.ObjectId, ref: 'Amzreviews'},
     sent_labels : {type: Array, "default": []},
+    sent_sub_cats: {type: Array, "default": []}
 });
 
 module.exports = mongoose.model('Amzlabel', amzLabelSchema);
