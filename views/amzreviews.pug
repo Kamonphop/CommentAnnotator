@@ -1,0 +1,107 @@
+extends layout
+
+block content
+    if errorMessage.length > 0
+        .alert.alert-danger-alt.alert-dismissable
+            a.close(href='#', data-dismiss='alert', aria-label='close') ×
+            strong #{errorMessage}
+    if successMessage.length > 0
+        .alert.alert-success-alt.alert-dismissable
+            a.close(href='#', data-dismiss='alert', aria-label='close') ×
+            strong #{successMessage}
+    h3.
+        Original Review:
+    .row
+        .col-sm-8
+            //each review in reviews
+            p
+                strong Product Asin: 
+                | #{review.asin}
+                | #{review._id}
+                br
+                strong Ratings: 
+                | #{review.ratings} out of 5
+                br
+                strong Summary: 
+                | #{review.summary}
+        .col-sm-4
+            .alert.alert-info(role='alert').float-right
+                |  Annotated 
+                span.badge.badge-pill.badge-primary #{done_many}
+                |  out of 10 reviews
+    .col-sm-12
+        #wrap
+            textarea(readonly='') #{review.reviewText}
+        //| #{review.reviewText.match(/([\s]+)/g).length}
+    br
+    h3.
+        Add Labels:
+    .col-sm-12
+        br
+        form(name="submit-review",method="post",action="/amzreview-submit", onsubmit="return check_checkboxes()")
+            input(type="hidden" name="user_id" value=user._id)
+            input(type="hidden" name="review_id" value=review._id)
+            table.table
+                thead.thead-inverse
+                    tr
+                        th.numbercell #
+                        th.classifysentence Sentence
+                        th.label Label
+                tbody
+                    each sentence, i in sentences
+                        tr
+                            th.numbercell(scope='row')
+                                = i+1
+                            td.classifysentence #{sentence}
+                            td.label
+                                .form-check
+                                    label.form-check-label
+                                        input.form-check-input(name='sent_'+(i+1), type='checkbox', value='0', id='sent_'+(i+1)+'_cat_0')
+                                        |     Other
+                                        br
+                                        .card.choice_hidden(class='choice_for_sent_'+(i+1)+'_cat_0', style="padding: 0px 10px 0px 10px;")
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_0', type='checkbox', value='0')
+                                                |     Choice 1 for 0
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_0', type='checkbox', value='1')
+                                                |     Choice 2 for 0 
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_0', type='checkbox', value='2')
+                                                |     Choice 3 for 0
+                                .form-check
+                                    label.form-check-label
+                                        input.form-check-input(name='sent_'+(i+1), type='checkbox', value='1', id='sent_'+(i+1)+'_cat_1')
+                                        |     Software
+                                        br
+                                        .card.choice_hidden(class='choice_for_sent_'+(i+1)+'_cat_1', style="padding: 0px 10px 0px 10px;")
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_1', type='checkbox', value='0')
+                                                |     Choice 1 for 1
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_1', type='checkbox', value='1')
+                                                |     Choice 2 for 1
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_1', type='checkbox', value='2')
+                                                |     Choice 3 for 1
+                                .form-check
+                                    label.form-check-label
+                                        input.form-check-input(name='sent_'+(i+1), type='checkbox', value='2', id='sent_'+(i+1)+'_cat_2')
+                                        |     Hardware
+                                        br
+                                        .card.choice_hidden(class='choice_for_sent_'+(i+1)+'_cat_2', style="padding: 0px 10px 0px 10px;")
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_2', type='checkbox', value='0')
+                                                |     Choice 1 for 2
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_2', type='checkbox', value='1')
+                                                |     Choice 2 for 2
+                                            label.form-check-label
+                                                input.form-check-input(name='sent_'+(i+1)+'_cat_2', type='checkbox', value='2')
+                                                |     Choice 3 for 2
+            .alert.alert-danger-alt.collapse(id="error")
+            button.btn.btn-primary(type='submit') Submit
+block javascript
+    script
+        | $("textarea").height( $("textarea")[0].scrollHeight);
+    script(src="/js/amzreviewpage.js")

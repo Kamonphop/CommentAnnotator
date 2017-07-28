@@ -1,0 +1,79 @@
+extends layout
+
+block content
+    script(src='/js/prism.js')
+    script(src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js')
+
+    //- p Welcome, #{user.local.email}
+    pre.codeSnippet
+        code.language-java #{srcCodeContent}
+    
+    h4(style='margin-top: 50px') Current comment
+    p#myComment(style='background-color: #EEEEEE; color:green') #{commentList[0]}
+
+    #div1
+        button#btnPrev(style='margin: 5px').btn.btn-warning.btn-md Prev
+        button#btnNext(style='margin: 5px').btn.btn-warning.btn-md Next
+
+    h5(style='margin-top: 30px;') Useful?
+    #div2
+        button#btnA(style='margin: 5px').btn.btn-success.btn-md Yes
+        button#btnB(style='margin: 5px').btn.btn-danger.btn-md No
+    
+    //-  LOGIN FORM 
+    form(style='margin-top: 50px', action="/addAnnotation" method="post")
+        input#dj.form-control(type='hidden' name='dataJson')
+        button.btn.btn-lg(type='submit') Submit
+
+    script.
+        $(document).ready(function() {
+            var arr = !{JSON.stringify(commentList)};
+            var i = 0;
+            var finalObj = {
+                comments: [
+                    { text: '// sample comment', label: 'a'} 
+                ]
+            };
+            
+            $("#btnNext").click( function() {
+                var currIdx = i;
+                var j = nextIdx(currIdx, arr);
+                $('#myComment').html(arr[j]);
+            });
+        
+            $("#btnPrev").click( function() {
+                var currIdx = i;
+                var j = prevIdx(currIdx, arr);
+                $('#myComment').html(arr[j]);
+            });
+            
+            function nextIdx(n, a) {
+                console.log('currId: ' + n);
+                if (n == a.length-1) { i=0; }
+                else { ++i; }
+                return i;
+            }
+
+            function prevIdx(n, a) {
+                console.log('currId: ' + n);
+                if (n == 0) { i=a.length-1; }
+                else { --i; }
+                return i;
+            }
+
+            $("#btnA").click( function() {
+                var temp = {
+                    text: arr[i],
+                    label: 'a'
+                }
+                finalObj.comments.push(temp);
+                $('#dj').val(JSON.stringify(finalObj));
+                console.log('labelled: a');
+                console.log(finalObj);
+            });
+
+            //- $("#btnB").click( function() {
+            //- 
+            //- });
+
+        });

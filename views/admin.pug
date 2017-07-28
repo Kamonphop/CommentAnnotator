@@ -1,7 +1,11 @@
 extends layout
 
 block content
-    h1= "Admin page"
-    p Welcome, #{user.local.email}
-    p Finished setting up?   
-    a(href="/logout") Log out
+	h4(style="text-align:center")
+		| Admin Page!
+	nav.breadcrumb
+		span.breadcrumb-item.active Admin Console
+	.list-group
+		a.list-group-item.list-group-item-action(href='/admin/allusers') List of users
+		a.list-group-item.list-group-item-action(href='#') List of comments	
+		a.list-group-item.list-group-item-action(href='/admin/allreviews') List of reviews

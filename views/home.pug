@@ -1,0 +1,30 @@
+extends layout
+
+block content
+    if errorMessage.length > 0
+        .alert.alert-danger.alert-dismissable
+            a.close(href='#', data-dismiss='alert', aria-label='close') ×
+            strong #{errorMessage}
+    h4.
+        Welcome! #{user.local.email}
+    h3.
+        Please select what module you want to work on below!
+    br
+    .row
+        .col-sm-6
+            .container
+                .jumbotron
+                    h3 Code Comments
+                    p
+                        | Some description
+                    p
+                        a.btn.btn-primary(href='/codecomments', role='button') Work on it now »
+        .col-sm-6
+            .container
+                .jumbotron
+                    h3 Amazon Reviews
+                    p
+                        | Some description
+                    p
+                        a.btn.btn-primary(href='/amzreviews', role='button') Work on it now »
+                

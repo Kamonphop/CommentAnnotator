@@ -13,9 +13,13 @@ var app = express();
 
 // database connection
 var configDB = require('./config/database.js');
+mongoose.Promise = global.Promise;
 mongoose.connect(configDB.url, { useMongoClient: true }, function(err) {
     if(err) {
         console.log("connection to db failed!" + err);
+    }
+    else{
+      console.log("connected to the database");
     }
 });
 
@@ -33,11 +37,12 @@ app.use(flash());
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
+app.set('view options', { pretty: true });
 
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
