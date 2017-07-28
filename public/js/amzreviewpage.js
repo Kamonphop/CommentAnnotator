@@ -13,9 +13,13 @@ $(':checkbox:checked').each(function(){
 function showMoreOption(x){
 	var option = '.choice_for_'+$(x).attr('id');
 	if($(option).is(':visible')){
-		$(option).fadeOut();
+		$(option).hide();
+		var itsoption = "input[name='"+$(x).attr('id')+"']";
+		$(itsoption).each(function(){
+			$(this).prop("checked", false);
+		});
 	}else{
-		$(option).fadeIn();
+		$(option).show();
 	}
 }
 
