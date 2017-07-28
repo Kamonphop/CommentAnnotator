@@ -62,3 +62,9 @@ textarea{
 .table th, .table td {
     border-top: 2px solid #C0C0C0;
 }
+
+/*    for code comments pages */
+.codeSnippet {
+    padding-top: 100px;
+    width: 50%;
+}
