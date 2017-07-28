@@ -2,6 +2,7 @@ var Comment = require('../models/comment');
 var Amzreviews = require('../models/amzreview');
 var Amzlabels = require('../models/amzlabel');
 var User = require('../models/user');
+var ObjectId = require('mongodb').ObjectID;
 
 /*for data tokenizer*/
 var Tokenizer = require('sentence-tokenizer');
@@ -13,7 +14,7 @@ const request = require('request');
 module.exports = function(app, passport) {
     // HOME PAGE
     app.get('/', function(req, res) {
-        res.render('codecomments.pug', { title: 'Comment Annotator' });
+        res.render('index.pug', { title: 'Comment Annotator' });
         // simulateLoginForMe('abhi@usc.edu', '1234', req, res);
     });
 
@@ -230,9 +231,32 @@ module.exports = function(app, passport) {
         });
     });
 
+    //TODO: make sure that user can only submit 1 time per review.
+    //now: Assume that no user submit the same review twice for now.
+    app.get('/admin/allreviews/:review_id', [isLoggedIn,redirectifnotAdmin], function(req,res){
+        var object_review_id = ObjectId(req.params.review_id);
+        Amzreviews.find({_id: object_review_id}, function(error,review){
+            // Amzlabels.find({review_id: object_review_id}).distinct('user_id', function(err,ids){
+                // Amzlabels.find({review_id: object_review_id, user_id:{$in : ids}},function(err,result) {
+            Amzlabels.find({review_id: object_review_id},function(err,result) {
+                console.log(result);
+                rev = review[0];
+                tokenizer.setEntry(rev.reviewText);
+                sentences = tokenizer.getSentences();
+                getStatisticsOfReview(sentences,result);
+                res.render('review.pug',{
+                    user : req.user,
+                    review: rev,
+                    sentences: sentences,
+                    labeled_review_data: result
+                });
+                // });
+            });
+        });
+    });
+
     app.get('/admin/allusers', [isLoggedIn,redirectifnotAdmin], function(req,res){
         User.find({}, function(error,users){
-            console.log(users);
             res.render('allusers.pug', {
                 user : req.user,
                 users : users
@@ -291,4 +315,26 @@ function getDistinctLabel(arrayitem){
         distinct.push(each_review);
     }
     return distinct;
+}
+
+//Caution: this is such a hack, but might just work fine
+function getStatisticsOfReview(sentences,labeled_review){
+    rearray = [];
+    for(var i = 0; i<sentences.length;i++){
+        sentence = {};
+        sentence["sentenceText"] = sentences[i];
+        sentence["label"] = {"0":NaN, "1":NaN, "2":NaN};
+        sentence["cat0"] = {"0":NaN, "1":NaN, "2":NaN};
+        sentence["cat1"] = {"0":NaN, "1":NaN, "2":NaN};
+        sentence["cat2"] = {"0":NaN, "1":NaN, "2":NaN};
+        rearray.push(sentence);
+    }
+    console.log(rearray);
+    for(var i = 0; i<labeled_review.length;i++){
+        sent_labels = labeled_review[i].sent_labels;
+        for(var j = 0; j<sent_labels; j++){
+
+        }
+        console.log(sent_labels);
+    }
 }

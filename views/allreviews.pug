@@ -25,5 +25,7 @@ block content
 					tr
 						th(scope='row')
 							= i+1
-						td #{labeled_review.review_id.replace(/^"(.*)"$/, '$1')}
+						td 
+							- var reviewID = labeled_review.review_id.replace(/^"(.*)"$/, '$1');
+							a(href="/admin/allreviews/"+reviewID) #{reviewID}
 						td #{labeled_review.num_users}
