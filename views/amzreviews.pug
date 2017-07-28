@@ -41,22 +41,19 @@ block content
         form(name="submit-review",method="post",action="/amzreview-submit", onsubmit="return check_checkboxes()")
             input(type="hidden" name="user_id" value=user._id)
             input(type="hidden" name="review_id" value=review._id)
-            .divTable
-                .divTableBody
-                    .divTableRow
-                        .divTableCell.numbercell
-                            strong #
-                        .divTableCell.classifysentence
-                            strong Sentence
-                        .divTableCell.label
-                            strong Label
+            table.table
+                thead.thead-inverse
+                    tr
+                        th.numbercell #
+                        th.classifysentence Sentence
+                        th.label Label
+                tbody
                     each sentence, i in sentences
-                        .divTableRow
-                            .divTableCell.numbercell
+                        tr
+                            th.numbercell(scope='row')
                                 = i+1
-                            .divTableCell.classifysentence
-                                | #{sentence}
-                            .divTableCell.label
+                            td.classifysentence #{sentence}
+                            td.label
                                 .form-check
                                     label.form-check-label
                                         input.form-check-input(name='sent_'+(i+1), type='checkbox', value='0', id='sent_'+(i+1)+'_cat_0')
@@ -102,8 +99,6 @@ block content
                                             label.form-check-label
                                                 input.form-check-input(name='sent_'+(i+1)+'_cat_2', type='checkbox', value='2')
                                                 |     Choice 3 for 2
-            br
-            
             .alert.alert-danger-alt.collapse(id="error")
             button.btn.btn-primary(type='submit') Submit
 block javascript

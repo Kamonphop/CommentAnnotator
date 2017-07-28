@@ -59,3 +59,6 @@ textarea{
 }
 .alert-danger-alt { border-color: #E26868;background: #E26868;color: #fff; }
 .alert-success-alt { border-color: #74b981;background:#74b981;color: #fff; }
+.table th, .table td {
+    border-top: 2px solid #C0C0C0;
+}

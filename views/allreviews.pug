@@ -25,5 +25,5 @@ block content
 					tr
 						th(scope='row')
 							= i+1
-						td #{labeled_review.review_id}
+						td #{labeled_review.review_id.replace(/^"(.*)"$/, '$1')}
 						td #{labeled_review.num_users}
