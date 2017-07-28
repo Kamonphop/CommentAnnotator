@@ -14,12 +14,16 @@
     "debug": "~2.6.3",
     "express": "~4.15.2",
     "express-session": "^1.15.4",
+    "extract-comments": "^0.10.1",
     "mongoose": "^4.11.3",
     "morgan": "~1.8.1",
     "passport": "^0.3.2",
     "passport-local": "^1.0.0",
     "pug": "~2.0.0-beta11",
     "pug-bootstrap": "0.0.15",
+    "querystring": "^0.2.0",
+    "regex": "^0.1.1",
+    "request": "^2.81.0",
     "sentence-tokenizer": "0.0.8",
     "serve-favicon": "~2.4.2"
   }
