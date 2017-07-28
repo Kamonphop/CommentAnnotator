@@ -15,7 +15,6 @@ module.exports = function(app, passport) {
     // HOME PAGE
     app.get('/', function(req, res) {
         res.render('index.pug', { title: 'Comment Annotator' });
-        // simulateLoginForMe('abhi@usc.edu', '1234', req, res);
     });
 
 
