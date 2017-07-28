@@ -1,6 +1,7 @@
 var Comment = require('../models/comment');
 var Amzreviews = require('../models/amzreview');
 var Amzlabels = require('../models/amzlabel');
+var User = require('../models/user');
 
 /*for data tokenizer*/
 var Tokenizer = require('sentence-tokenizer');
@@ -173,6 +174,31 @@ module.exports = function(app, passport) {
             }
         });
     });
+
+    app.get('/admin/allreviews', [isLoggedIn,redirectifnotAdmin], function(req,res){
+        Amzreviews.find({}, function(error,reviews){
+            var total_num = reviews.length;
+            Amzlabels.find({}, 'user_id review_id', function(err,labeledreviews){
+                var distinct_labeled_review_id = getDistinctLabel(labeledreviews);
+                res.render('allreviews.pug',{
+                    user : req.user,
+                    total_num : total_num,
+                    labeled_reviews: distinct_labeled_review_id
+                });
+            });
+        });
+    });
+
+    app.get('/admin/allusers', [isLoggedIn,redirectifnotAdmin], function(req,res){
+        User.find({}, function(error,users){
+            console.log(users);
+            res.render('allusers.pug', {
+                user : req.user,
+                users : users
+            });
+        });
+    });
+
 };
 
 
@@ -198,3 +224,30 @@ function redirectifnotAdmin(req, res, next) {
     }
 }
 
+function getDistinctLabel(arrayitem){
+    var unique = {};
+    var labeled_r_id = {};
+    var distinct = [];
+    for(var item in arrayitem){
+        review_id = JSON.stringify(arrayitem[item].review_id);
+        user_id = JSON.stringify(arrayitem[item].user_id);
+        if( typeof(unique[review_id]) == "undefined"){
+            // distinct.push(arrayitem[item].review_id);
+            list_user = [];
+            list_user.push(user_id);
+            labeled_r_id[review_id] = list_user;
+            unique[review_id] = 0;
+        }else{
+            if(!labeled_r_id[review_id].includes(user_id)){
+                labeled_r_id[review_id].push(user_id);
+            }
+        }
+    }
+    for(var item in labeled_r_id){
+        var each_review = {};
+        each_review["review_id"] = item;
+        each_review["num_users"] = labeled_r_id[item].length;
+        distinct.push(each_review);
+    }
+    return distinct;
+}

@@ -1,0 +1,29 @@
+extends layout
+
+block content
+	h4(style="text-align:center")
+		| List of Reviews!
+	nav.breadcrumb
+		a.breadcrumb-item(href='/admin') Admin Console
+		span.breadcrumb-item.active List of reviews
+	br
+	| Total of 
+	span.badge.badge-pill.badge-primary #{labeled_reviews.length} 
+	|  labeled reviews out of 
+	span.badge.badge-pill.badge-danger #{total_num} 
+	|  total reviews
+	br
+	div(style="padding-top:20px;")
+		table.table.table-sm
+			thead
+				tr
+					th #
+					th Review ID
+					th Number of Users
+			tbody
+				each labeled_review, i in labeled_reviews
+					tr
+						th(scope='row')
+							= i+1
+						td #{labeled_review.review_id}
+						td #{labeled_review.num_users}

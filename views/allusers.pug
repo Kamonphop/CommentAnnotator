@@ -1,0 +1,35 @@
+extends layout
+
+block content
+	h4(style="text-align:center")
+		| List of Users!
+	nav.breadcrumb
+		a.breadcrumb-item(href='/admin') Admin Console
+		span.breadcrumb-item.active List of users
+	br
+	| Total of 
+	span.badge.badge-pill.badge-danger #{users.length}
+	|  users registered in the system
+	div(style="padding-top:20px;")
+		table.table.table-sm
+			thead
+				tr
+					th #
+					th First Name
+					th Last Name
+					th Email
+					th Admin
+			tbody
+				each user_, i in users
+					tr
+						th(scope='row')
+							= i+1
+						td
+						td
+						td #{user_.local.email}
+						if user_.local.isAdmin
+							td
+								span.badge.badge-pill.badge-danger Admin
+						else
+							td 
+
