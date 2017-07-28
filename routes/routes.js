@@ -7,10 +7,61 @@ var User = require('../models/user');
 var Tokenizer = require('sentence-tokenizer');
 var tokenizer = new Tokenizer('Chuck');
 
+const fs = require('fs');
+const request = require('request');
+
 module.exports = function(app, passport) {
     // HOME PAGE
     app.get('/', function(req, res) {
-        res.render('index.pug', { title: 'Comment Annotator' });
+        res.render('codecomments.pug', { title: 'Comment Annotator' });
+        // simulateLoginForMe('abhi@usc.edu', '1234', req, res);
+    });
+
+
+    // code comments annotation index page
+    app.get('/codecomments', (req, res) => {
+        fs.readFile('data-test-cc/test.java', 'utf-8', (err, data) => {
+            if(err) { return console.log(err); }
+
+            var re = /(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)/gm;
+            var arrComments = data.match(re);
+
+            res.render('codecomments.pug',{
+                user: req.user,
+                srcCodeContent: data,
+                commentList : arrComments
+            });
+        });
+    });
+
+
+    app.post('/addAnnotation', (req, res) => {
+        console.log('form submitted!');
+        // res.send(JSON.parse(req.body.dataJson));
+
+        User.findOne({ 'local.email': 'abhi@usc.edu' }, function (err, user) {
+            if (err)
+                return next(err);
+
+            var bodyData = JSON.parse(req.body.dataJson);
+            // var newComment = new Comment();
+
+            // for (var i in bodyData.comments) {
+
+            var newUser = new User();
+            // newUser = user;
+            newUser['annotated']['text'] = bodyData.comments[0].text;
+            newUser['annotated']['category'] = bodyData.comments[0].label;
+
+            console.log(newUser.annotated);
+
+            newUser.save(function(err, newuser) {
+                if (err)
+                    throw err;
+                res.send(newuser);
+            });
+            // }
+        });
     });
 
 
@@ -53,7 +104,7 @@ module.exports = function(app, passport) {
 
     // PROFILE SECTION =====================
     // protected section, must be logged in, using route middleware to verify
-    app.get('/profile', [isLoggedIn] , function(req, res) {
+    app.get('/profile', isLoggedIn , function(req, res) {
         Comment.find({}, 'text', (err, docs) => {
             if(err)
                 return next(err);
@@ -64,7 +115,7 @@ module.exports = function(app, passport) {
         });
     });
 
-    app.get('/home', [isLoggedIn], function(req,res){
+    app.get('/home', isLoggedIn, function(req,res){
         res.render('home.pug',{
             user: req.user,
             errorMessage: req.flash('error')
@@ -73,7 +124,7 @@ module.exports = function(app, passport) {
 
     //TODO: assign user to certain review, now is random
     //TODO: might need to also check if users has already done this review, randomly select another review
-    app.get('/amzreviews', [isLoggedIn], function(req,res){
+    app.get('/amzreviews', isLoggedIn, function(req,res){
         //randomly select x review(s)
         Amzreviews.aggregate([{$sample: {size: 1}}],function(err,reviews){
             Amzlabels.find({user_id: req.user._id}).distinct('review_id', function(err,data){
@@ -95,19 +146,9 @@ module.exports = function(app, passport) {
         });
     });
 
-    app.get('/codecomments', [isLoggedIn], function(req,res){
-        Comment.find({}, 'text', (err, docs) => {
-            if(err)
-                return next(err);
-            res.render('codecomments.pug',{
-                user: req.user,
-                commentsList: docs
-            });
-        });
-    });
 
     // ADMIN SECTION =====================
-    app.get('/admin', [isLoggedIn,redirectifnotAdmin],function(req, res) {
+    app.get('/admin', [isLoggedIn,redirectifnotAdmin], function(req, res) {
         req.flash('success','Test flash message.');
         res.render('admin.pug', {
             user : req.user,

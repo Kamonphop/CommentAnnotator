@@ -59,3 +59,13 @@ textarea{
 }
 .alert-danger-alt { border-color: #E26868;background: #E26868;color: #fff; }
 .alert-success-alt { border-color: #74b981;background:#74b981;color: #fff; }
+
+
+/*
+    for code comments pages
+*/
+
+.codeSnippet {
+    padding-top: 100px;
+    width: 50%;
+}
