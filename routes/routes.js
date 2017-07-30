@@ -238,16 +238,16 @@ module.exports = function(app, passport) {
             // Amzlabels.find({review_id: object_review_id}).distinct('user_id', function(err,ids){
                 // Amzlabels.find({review_id: object_review_id, user_id:{$in : ids}},function(err,result) {
             Amzlabels.find({review_id: object_review_id},function(err,result) {
-                console.log(result);
+                // console.log(result);
                 rev = review[0];
                 tokenizer.setEntry(rev.reviewText);
                 sentences = tokenizer.getSentences();
-                getStatisticsOfReview(sentences,result);
+                stats = getStatisticsOfReview(sentences,result);
                 res.render('review.pug',{
                     user : req.user,
                     review: rev,
                     sentences: sentences,
-                    labeled_review_data: result
+                    labeled_review_data: stats
                 });
                 // });
             });
@@ -322,18 +322,48 @@ function getStatisticsOfReview(sentences,labeled_review){
     for(var i = 0; i<sentences.length;i++){
         sentence = {};
         sentence["sentenceText"] = sentences[i];
-        sentence["label"] = {"0":NaN, "1":NaN, "2":NaN};
-        sentence["cat0"] = {"0":NaN, "1":NaN, "2":NaN};
-        sentence["cat1"] = {"0":NaN, "1":NaN, "2":NaN};
-        sentence["cat2"] = {"0":NaN, "1":NaN, "2":NaN};
+        sentence["bigcat"] = {"0":0, "1":0, "2":0};
+        sentence["cat0"] = {"0":0, "1":0, "2":0};
+        sentence["cat1"] = {"0":0, "1":0, "2":0};
+        sentence["cat2"] = {"0":0, "1":0, "2":0};
         rearray.push(sentence);
     }
-    console.log(rearray);
     for(var i = 0; i<labeled_review.length;i++){
+        //for Big-category
         sent_labels = labeled_review[i].sent_labels;
-        for(var j = 0; j<sent_labels; j++){
-
+        for(var j = 0; j<sent_labels.length; j++){
+            var cur_sentence = j;
+            var name = "sent_"+(j+1);
+            if(Array.isArray(sent_labels[j][name])){
+                for(var k = 0; k<sent_labels[j][name].length;k++){
+                    var category = sent_labels[j][name][k];
+                    rearray[cur_sentence]["bigcat"][category] += 1;  
+                }
+            }else{
+                var category = sent_labels[j][name];
+                rearray[cur_sentence]["bigcat"][category] +=1;
+            }
         }
-        console.log(sent_labels);
+        //For Sub-category
+        sent_sub_cats = labeled_review[i].sent_sub_cats;
+        for(var j = 0; j<sent_sub_cats.length; j++){
+            var name = Object.keys(sent_sub_cats[j])[0];
+            var strsplit = name.split("_");
+            var sentenceIndex = parseInt(strsplit[1])-1;//index start at 0
+            var catIndex = "cat"+strsplit[3];
+            if(Array.isArray(sent_sub_cats[j][name])){
+                console.log("YES array");
+                for(var k = 0; k<sent_sub_cats[j][name].length;k++){
+                    var category = sent_sub_cats[j][name][k];
+                    rearray[sentenceIndex][catIndex][category] += 1;
+                }
+            }
+            else{
+                var category = sent_sub_cats[j][name];
+                rearray[sentenceIndex][catIndex][category] +=1;
+            }
+        }
+        //TODO: for sentiment analysis below:
     }
+    return rearray;
 }
