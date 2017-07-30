@@ -17,8 +17,9 @@ block content
             p
                 strong Product Asin: 
                 | #{review.asin}
+                | #{review._id}
                 br
-                strong Ratings:
+                strong Ratings: 
                 | #{review.ratings} out of 5
                 br
                 strong Summary: 
@@ -101,4 +102,6 @@ block content
             .alert.alert-danger-alt.collapse(id="error")
             button.btn.btn-primary(type='submit') Submit
 block javascript
+    script
+        | $("textarea").height( $("textarea")[0].scrollHeight);
     script(src="/js/amzreviewpage.js")

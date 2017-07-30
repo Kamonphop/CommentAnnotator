@@ -60,35 +60,11 @@ textarea{
 .alert-danger-alt { border-color: #E26868;background: #E26868;color: #fff; }
 .alert-success-alt { border-color: #74b981;background:#74b981;color: #fff; }
 .table th, .table td {
-    border-top: 2px solid #eceeef;
-    border-right: 2px solid #eceeef;
-}
-.table thead th{
-  border-top: 0px;
-  border-bottom: 2px solid #eceeef;
-/*  border-bottom: 2px solid #C0C0C0;*/
+    border-top: 2px solid #C0C0C0;
 }
 
 /*    for code comments pages */
 .codeSnippet {
     padding-top: 100px;
     width: 50%;
-}
-.sentencecell{
-  width:500px;
-}
-.toggleDisplayC0, .toggleDisplayC1, .toggleDisplayC2 {
-  display: none;
-}
-.toggleDisplayC0.in{
-  display: table-cell;
-  background-color:#7fc1bd;
-}
-.toggleDisplayC1.in{
-  display: table-cell;
-  background-color:#f7c4aa;
-}
-.toggleDisplayC2.in{
-  display: table-cell;
-  background-color:#fbe6c6;
 }
