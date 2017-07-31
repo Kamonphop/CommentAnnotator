@@ -1,6 +1,7 @@
 var Comment = require('../models/comment');
 var Amzreviews = require('../models/amzreview');
 var Amzlabels = require('../models/amzlabel');
+var Products = require('../models/product');
 var User = require('../models/user');
 var ObjectId = require('mongodb').ObjectID;
 
@@ -131,13 +132,20 @@ module.exports = function(app, passport) {
             Amzlabels.find({user_id: req.user._id}).distinct('review_id', function(err,data){
                 if(err)
                     return next(err);
-                done_num = data.length;
-                review = reviews[0];
-                tokenizer.setEntry(review.reviewText);
-                sentences = tokenizer.getSentences();
+                if(reviews.length==0){
+                    var done_num = 0;
+                    var rev = {};
+                    var sentences = [];
+                    req.flash('error','Sorry! there are currently no review in the system!');
+                }else{
+                    var done_num = data.length;
+                    var rev = reviews[0];
+                    tokenizer.setEntry(rev.reviewText);
+                    var sentences = tokenizer.getSentences();
+                }
                 res.render('amzreviews.pug',{
                     user: req.user,
-                    reviews: review,
+                    review: rev,
                     sentences: sentences,
                     done_many: done_num,
                     errorMessage: req.flash('error'),
@@ -217,15 +225,18 @@ module.exports = function(app, passport) {
         });
     });
 
-    app.get('/admin/allreviews', [isLoggedIn,redirectifnotAdmin], function(req,res){
-        Amzreviews.find({}, function(error,reviews){
+    app.get('/admin/allproducts/:asin_id', [isLoggedIn,redirectifnotAdmin], function(req,res){
+        Amzreviews.find({asin : req.params.asin_id}).distinct('_id', function(error,reviews){
             var total_num = reviews.length;
-            Amzlabels.find({}, 'user_id review_id', function(err,labeledreviews){
+            console.log(reviews);
+            Amzlabels.find({review_id:{$in : reviews}}, 'user_id review_id', function(err,labeledreviews){
                 var distinct_labeled_review_id = getDistinctLabel(labeledreviews);
                 res.render('allreviews.pug',{
                     user : req.user,
+                    asin: req.params.asin_id,
                     total_num : total_num,
-                    labeled_reviews: distinct_labeled_review_id
+                    labeled_reviews: distinct_labeled_review_id,
+                    errorMessage: req.flash('error')
                 });
             });
         });
@@ -233,22 +244,32 @@ module.exports = function(app, passport) {
 
     //TODO: make sure that user can only submit 1 time per review.
     //now: Assume that no user submit the same review twice for now.
-    app.get('/admin/allreviews/:review_id', [isLoggedIn,redirectifnotAdmin], function(req,res){
+    app.get('/admin/allproducts/:asin_id/:review_id', [isLoggedIn,redirectifnotAdmin], function(req,res){
         var object_review_id = ObjectId(req.params.review_id);
         Amzreviews.find({_id: object_review_id}, function(error,review){
             // Amzlabels.find({review_id: object_review_id}).distinct('user_id', function(err,ids){
                 // Amzlabels.find({review_id: object_review_id, user_id:{$in : ids}},function(err,result) {
             Amzlabels.find({review_id: object_review_id},function(err,result) {
-                // console.log(result);
-                rev = review[0];
-                tokenizer.setEntry(rev.reviewText);
-                sentences = tokenizer.getSentences();
-                stats = getStatisticsOfReview(sentences,result);
+                //if can't find record
+                if(review.length == 0){
+                    var rev = {};
+                    var stats = [];
+                    var sentences = [];
+                    req.flash('error','Sorry! we could not find the review_id you are requesting!');
+                }else{
+                    var rev = review[0];
+                    tokenizer.setEntry(rev.reviewText);
+                    var sentences = tokenizer.getSentences();
+                    var stats = getStatisticsOfReview(sentences,result);
+                }
+                console.log(rev);
                 res.render('review.pug',{
                     user : req.user,
                     review: rev,
+                    asin: req.params.asin_id,
                     sentences: sentences,
-                    labeled_review_data: stats
+                    labeled_review_data: stats,
+                    errorMessage: req.flash('error')
                 });
                 // });
             });
@@ -261,6 +282,36 @@ module.exports = function(app, passport) {
                 user : req.user,
                 users : users
             });
+        });
+    });
+
+    app.get('/admin/allproducts', [isLoggedIn,redirectifnotAdmin], function(req,res){
+        Products.find({}, function(error,pds){
+            res.render('allproducts.pug', {
+                user : req.user,
+                products: pds,
+                errorMessage: req.flash('error'),
+                successMessage: req.flash('success')
+            });
+        });
+    });
+
+    app.post('/admin/addproduct', [isLoggedIn,redirectifnotAdmin], function(req,res,next){
+        console.log(req.body);
+        var data = req.body;
+                    //save to the db
+        var newproduct = new Products({});
+        newproduct.asin = data.asin;
+        newproduct.shortname = data.shortname;
+        newproduct.save(function(err){
+            if(err){
+                res.send(err);
+            }
+            else{
+                console.log("Data saved");
+                req.flash('success','Added the new product successfully')
+                res.redirect('back');
+            }
         });
     });
 
@@ -298,7 +349,7 @@ function getDistinctLabel(arrayitem){
         user_id = JSON.stringify(arrayitem[item].user_id);
         if( typeof(unique[review_id]) == "undefined"){
             // distinct.push(arrayitem[item].review_id);
-            list_user = [];
+            var list_user = [];
             list_user.push(user_id);
             labeled_r_id[review_id] = list_user;
             unique[review_id] = 0;
@@ -319,9 +370,9 @@ function getDistinctLabel(arrayitem){
 
 //Caution: this is such a hack, but might just work fine
 function getStatisticsOfReview(sentences,labeled_review){
-    rearray = [];
+    var rearray = [];
     for(var i = 0; i<sentences.length;i++){
-        sentence = {};
+        var sentence = {};
         sentence["sentenceText"] = sentences[i];
         sentence["bigcat"] = {"0":0, "1":0, "2":0};
         sentence["cat0"] = {"0":0, "1":0, "2":0};
@@ -331,7 +382,7 @@ function getStatisticsOfReview(sentences,labeled_review){
     }
     for(var i = 0; i<labeled_review.length;i++){
         //for Big-category
-        sent_labels = labeled_review[i].sent_labels;
+        var sent_labels = labeled_review[i].sent_labels;
         for(var j = 0; j<sent_labels.length; j++){
             var cur_sentence = j;
             var name = "sent_"+(j+1);
@@ -346,7 +397,7 @@ function getStatisticsOfReview(sentences,labeled_review){
             }
         }
         //For Sub-category
-        sent_sub_cats = labeled_review[i].sent_sub_cats;
+        var sent_sub_cats = labeled_review[i].sent_sub_cats;
         for(var j = 0; j<sent_sub_cats.length; j++){
             var name = Object.keys(sent_sub_cats[j])[0];
             var strsplit = name.split("_");

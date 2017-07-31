@@ -1,0 +1,37 @@
+extends layout
+
+block content
+	h4(style="text-align:center")
+		| List of Products!
+	nav.breadcrumb
+		a.breadcrumb-item(href='/admin') Admin Console
+		span.breadcrumb-item.active List of products
+	if errorMessage.length > 0
+		.alert.alert-danger-alt.alert-dismissable
+			a.close(href='#', data-dismiss='alert', aria-label='close') ×
+			strong #{errorMessage}
+	if successMessage.length > 0
+		.alert.alert-success-alt.alert-dismissable
+			a.close(href='#', data-dismiss='alert', aria-label='close') ×
+			strong #{successMessage}
+	form.form-inline.float-right(name="add-product",method="post",action="/admin/addproduct")
+		label.sr-only(for='asin') Name
+		input.form-control.mb-2.mr-sm-2.mb-sm-0(type='text', placeholder='ASIN', id="asin", name="asin")
+		label.sr-only(for='name') Username
+		input.form-control.mb-2.mr-sm-2.mb-sm-0(type='text', placeholder='Name', id="shortname", name="shortname")
+		button.btn.btn-primary(type='submit') Add
+	div(style="padding-top:50px;")
+		table.table.table-sm
+			thead
+				tr
+					th.numbercell #
+					th Product ASIN
+					th Product Name
+			tbody
+				each product, i in products
+					tr
+						th.numbercell(scope='row')
+							= i+1
+						td
+							a(href="/admin/allproducts/"+product.asin) #{product.asin}
+						td #{product.shortname}
