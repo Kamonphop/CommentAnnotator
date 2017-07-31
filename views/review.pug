@@ -42,17 +42,65 @@ block content
 						th.numbercell(scope='row')
 							= i+1
 						td.sentencecell #{sentence.sentenceText}
-						td #{sentence.bigcat["0"]}
-						td #{sentence.bigcat["1"]}
-						td #{sentence.bigcat["2"]}
-						td.toggleDisplayC0 #{sentence.cat0["0"]}
-						td.toggleDisplayC0 #{sentence.cat0["1"]}
-						td.toggleDisplayC0 #{sentence.cat0["2"]}
-						td.toggleDisplayC1 #{sentence.cat1["0"]}
-						td.toggleDisplayC1 #{sentence.cat1["1"]}
-						td.toggleDisplayC1 #{sentence.cat1["2"]}
-						td.toggleDisplayC2 #{sentence.cat2["0"]}
-						td.toggleDisplayC2 #{sentence.cat2["1"]}
-						td.toggleDisplayC2 #{sentence.cat2["2"]}
+						td 
+							if sentence.bigcat["0"] == 0
+								|
+							else
+								| #{sentence.bigcat["0"]}
+						td
+							if sentence.bigcat["1"] == 0
+								|
+							else
+								| #{sentence.bigcat["1"]}
+						td
+							if sentence.bigcat["2"] == 0
+								|
+							else
+								| #{sentence.bigcat["2"]}
+						td.toggleDisplayC0
+							if sentence.cat0["0"] == 0
+								|
+							else
+								| #{sentence.cat0["0"]}
+						td.toggleDisplayC0
+							if sentence.cat0["1"] == 0
+								|
+							else
+								| #{sentence.cat0["1"]}
+						td.toggleDisplayC0
+							if sentence.cat0["2"] == 0
+								|
+							else
+								| #{sentence.cat0["2"]}
+						td.toggleDisplayC1
+							if sentence.cat1["0"] == 0
+								|
+							else
+								| #{sentence.cat1["0"]}
+						td.toggleDisplayC1
+							if sentence.cat1["1"] == 0
+								|
+							else
+								| #{sentence.cat1["1"]}
+						td.toggleDisplayC1
+							if sentence.cat1["2"] == 0
+								|
+							else
+								| #{sentence.cat1["2"]}
+						td.toggleDisplayC2
+							if sentence.cat2["0"] == 0
+								|
+							else
+								| #{sentence.cat2["0"]}
+						td.toggleDisplayC2
+							if sentence.cat2["1"] == 0
+								|
+							else
+								| #{sentence.cat2["1"]}
+						td.toggleDisplayC2
+							if sentence.cat2["2"] == 0
+								|
+							else
+								| #{sentence.cat2["2"]}
 block javascript
 	script(src="/js/admin.js")

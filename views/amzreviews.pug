@@ -41,6 +41,7 @@ block content
         form(name="submit-review",method="post",action="/amzreview-submit", onsubmit="return check_checkboxes()")
             input(type="hidden" name="user_id" value=user._id)
             input(type="hidden" name="review_id" value=review._id)
+            input(type="hidden" name="asin_id" value=review.asin)
             table.table
                 thead.thead-inverse
                     tr
@@ -100,6 +101,9 @@ block content
                                                 input.form-check-input(name='sent_'+(i+1)+'_cat_2', type='checkbox', value='2')
                                                 |     Choice 3 for 2
             .alert.alert-danger-alt.collapse(id="error")
-            button.btn.btn-primary(type='submit') Submit
+            if errorMessage.length > 0
+                button.btn.btn-primary(type='submit',disabled='') Submit
+            else
+                button.btn.btn-primary(type='submit') Submit
 block javascript
     script(src="/js/amzreviewpage.js")
