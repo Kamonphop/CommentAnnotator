@@ -17,8 +17,10 @@ block content
 	form.form-inline.float-right(name="add-product",method="post",action="/admin/addproduct")
 		label.sr-only(for='asin') Name
 		input.form-control.mb-2.mr-sm-2.mb-sm-0(type='text', placeholder='ASIN', id="asin", name="asin")
-		label.sr-only(for='name') Username
+		label.sr-only(for='shortname') Username
 		input.form-control.mb-2.mr-sm-2.mb-sm-0(type='text', placeholder='Name', id="shortname", name="shortname")
+		label.sr-only(for='imglink') Username
+		input.form-control.mb-2.mr-sm-2.mb-sm-0(type='text', placeholder='img link', id="imglink", name="imglink")
 		button.btn.btn-primary(type='submit') Add
 	div(style="padding-top:50px;")
 		table.table.table-sm

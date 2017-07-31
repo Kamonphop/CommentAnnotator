@@ -17,7 +17,7 @@ block content
 		table.table.table-sm
 			thead
 				tr
-					th(rowspan="2") #
+					th.numbercell(rowspan="2") #
 					th.sentencecell(rowspan="2") Sentence
 					th(colspan="3") Category
 					th.toggleDisplayC0(colspan="3") C0
@@ -39,7 +39,7 @@ block content
 			tbody
 				each sentence, i in labeled_review_data
 					tr
-						th(scope='row')
+						th.numbercell(scope='row')
 							= i+1
 						td.sentencecell #{sentence.sentenceText}
 						td #{sentence.bigcat["0"]}

@@ -155,6 +155,16 @@ module.exports = function(app, passport) {
         });
     });
 
+    app.get('/productlist', isLoggedIn, function(req,res){
+        Products.find({}, function(error,pds){
+            res.render('productlist.pug', {
+                user : req.user,
+                products: pds,
+                errorMessage: req.flash('error'),
+                successMessage: req.flash('success')
+            });
+        });
+    });
 
     // ADMIN SECTION =====================
     app.get('/admin', [isLoggedIn,redirectifnotAdmin], function(req, res) {
@@ -303,6 +313,7 @@ module.exports = function(app, passport) {
         var newproduct = new Products({});
         newproduct.asin = data.asin;
         newproduct.shortname = data.shortname;
+        newproduct.imagelink = data.imglink;
         newproduct.save(function(err){
             if(err){
                 res.send(err);

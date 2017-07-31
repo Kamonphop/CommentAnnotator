@@ -1,0 +1,14 @@
+extends layout
+
+block content
+	h4(style="text-align:center")
+		| Product list
+	.card-columns
+		each product in products
+			.card
+				div.text-center
+					img.card-img-top.img-fluid(src=product.imagelink, alt='Card image cap', width="50%")
+				.card-block
+					h4.card-title #{product.shortname}
+					p.card-text.text-center
+						a.btn.btn-outline-primary(href='/amzreviews', role='button') Work on it now »
