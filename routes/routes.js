@@ -166,29 +166,56 @@ module.exports = function(app, passport) {
         });
     });
 
+    //ugly hack for random page
     app.get('/productlist/:asin_id', isLoggedIn, function(req,res){
-        Amzlabels.find({user_id: req.user._id, asin_id: req.params.asin_id}).distinct('review_id', function(err,review_list){
-            var done_num = review_list.length;
-            Amzreviews.aggregate([{$match :{$and: [{ _id: {$nin : review_list}},{asin: req.params.asin_id}]}},{$sample: {size: 1}}],function(err,review_item){
-                if(review_item.length == 0){
-                    var rev = {};
-                    var sentences = [];                 
-                    req.flash('error','Sorry! either you have finished all reviews available for this product or we could not find reviews of this product!');
-                }else{
-                    var rev = review_item[0];
-                    tokenizer.setEntry(rev.reviewText);
-                    var sentences = tokenizer.getSentences();
-                }
-                res.render('amzreviews.pug', {
-                    user : req.user,
-                    review: rev,
-                    sentences: sentences,
-                    done_many: done_num,
-                    errorMessage: req.flash('error'),
-                    successMessage: req.flash('success')
+        if(req.params.asin_id == "random"){
+            Amzlabels.find({user_id: req.user._id}).distinct('review_id', function(err,review_list){
+                var done_num = review_list.length;
+                Amzreviews.aggregate([{$match :{ _id: {$nin : review_list}}},{$sample: {size: 1}}],function(err,review_item){
+                    if(review_item.length == 0){
+                        var rev = {};
+                        var sentences = [];                 
+                        req.flash('error','Sorry! either you have finished all reviews available for this product or we could not find reviews of this product!');
+                    }else{
+                        var rev = review_item[0];
+                        tokenizer.setEntry(rev.reviewText);
+                        var sentences = tokenizer.getSentences();
+                    }
+                    res.render('amzreviews.pug', {
+                        user : req.user,
+                        review: rev,
+                        sentences: sentences,
+                        done_many: done_num,
+                        errorMessage: req.flash('error'),
+                        successMessage: req.flash('success')
+                    });
+                });    
+            });
+        }else{
+            // Amzlabels.find({user_id: req.user._id, asin_id: req.params.asin_id}).distinct('review_id', function(err,review_list){
+            Amzlabels.find({user_id: req.user._id}).distinct('review_id', function(err,review_list){
+                var done_num = review_list.length;
+                Amzreviews.aggregate([{$match :{$and: [{ _id: {$nin : review_list}},{asin: req.params.asin_id}]}},{$sample: {size: 1}}],function(err,review_item){
+                    if(review_item.length == 0){
+                        var rev = {};
+                        var sentences = [];                 
+                        req.flash('error','Sorry! either you have finished all reviews available for this product or we could not find reviews of this product!');
+                    }else{
+                        var rev = review_item[0];
+                        tokenizer.setEntry(rev.reviewText);
+                        var sentences = tokenizer.getSentences();
+                    }
+                    res.render('amzreviews.pug', {
+                        user : req.user,
+                        review: rev,
+                        sentences: sentences,
+                        done_many: done_num,
+                        errorMessage: req.flash('error'),
+                        successMessage: req.flash('success')
+                    });
                 });
             });
-        });
+        }
     });
 
     // ADMIN SECTION =====================
