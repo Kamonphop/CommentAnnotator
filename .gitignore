@@ -3,3 +3,5 @@ node_modules/
 
 # Data
 data/
+dummy_data_comments/
+.idea/

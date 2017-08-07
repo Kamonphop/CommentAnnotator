@@ -1,0 +1,9 @@
+extends layout
+
+block content
+    h4(style="text-align:center")
+        | Add source code files:
+    form(action="/admin/add_comments" enctype="multipart/form-data" method="post")
+        div.form-group
+            input#srcfile.form-control(type='file' name='srcfile')
+            button.btn.btn-success.btn-md(type='submit') Save
