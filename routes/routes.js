@@ -377,6 +377,22 @@ module.exports = function(app, passport) {
         });
     });
 
+    app.get('/testcomment', isLoggedIn, function(req, res) {
+        // var files = fs.readdirSync('data-test-cc');
+        // var rand = files[Math.floor(Math.random() * files.length)];
+        // console.log(rand);
+        fs.readFile('data-test-cc/Key.java', 'utf-8', (err, data) => {
+            if(err) { return console.log(err); }
+            // var re = /(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)/gm;
+            // var arrComments = data.match(re);
+
+            res.render('testcodecomment.pug',{
+                user: req.user,
+                srcCodeContent: data
+            });
+        });
+    });
+
 };
 
 
