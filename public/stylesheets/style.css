@@ -8,7 +8,7 @@ a {
 }
 */
 body {
-    padding-top: 100px;
+    padding-top: 70px;
     padding-bottom: 25px;
 }
 textarea{
@@ -67,4 +67,35 @@ textarea{
 .codeSnippet {
     padding-top: 100px;
     width: 50%;
+}
+
+.sentencecell{
+  width:500px;
+}
+.toggleDisplayC0, .toggleDisplayC1, .toggleDisplayC2 {
+  display: none;
+}
+.toggleDisplayC0.in{
+  display: table-cell;
+  background-color:#7fc1bd;
+}
+.toggleDisplayC1.in{
+  display: table-cell;
+  background-color:#f7c4aa;
+}
+.toggleDisplayC2.in{
+  display: table-cell;
+  background-color:#fbe6c6;
+}
+
+.hero-spacer {
+    margin-top: 50px;
+}
+
+.hero-feature {
+    margin-bottom: 30px;
+}
+
+footer {
+    margin: 50px 0;
 }

@@ -9,3 +9,105 @@ block content
 		span.breadcrumb-item.active #{rev._id}
 
 	#{labeled_review_data}
+		| ReviewID = #{review._id}
+	nav.breadcrumb
+		a.breadcrumb-item(href='/admin') Admin Console
+		a.breadcrumb-item(href='/admin/allproducts') List of products
+		a.breadcrumb-item(href='/admin/allproducts') #{asin}
+		span.breadcrumb-item.active #{review._id}
+	br
+	if errorMessage.length > 0
+		.alert.alert-danger-alt.alert-dismissable
+			a.close(href='#', data-dismiss='alert', aria-label='close') ×
+			strong #{errorMessage}
+	div(style="padding-top:20px;")
+		table.table.table-sm
+			thead
+				tr
+					th.numbercell(rowspan="2") #
+					th.sentencecell(rowspan="2") Sentence
+					th(colspan="3") Category
+					th.toggleDisplayC0(colspan="3") C0
+					th.toggleDisplayC1(colspan="3") C1
+					th.toggleDisplayC2(colspan="3") C2
+				tr
+					th(id="expand_C0") C0
+					th(id="expand_C1") C1
+					th(id="expand_C2") C2
+					th.toggleDisplayC0 0
+					th.toggleDisplayC0 1
+					th.toggleDisplayC0 2
+					th.toggleDisplayC1 0
+					th.toggleDisplayC1 1
+					th.toggleDisplayC1 2
+					th.toggleDisplayC2 0
+					th.toggleDisplayC2 1
+					th.toggleDisplayC2 2
+			tbody
+				each sentence, i in labeled_review_data
+					tr
+						th.numbercell(scope='row')
+							= i+1
+						td.sentencecell #{sentence.sentenceText}
+						td 
+							if sentence.bigcat["0"] == 0
+								|
+							else
+								| #{sentence.bigcat["0"]}
+						td
+							if sentence.bigcat["1"] == 0
+								|
+							else
+								| #{sentence.bigcat["1"]}
+						td
+							if sentence.bigcat["2"] == 0
+								|
+							else
+								| #{sentence.bigcat["2"]}
+						td.toggleDisplayC0
+							if sentence.cat0["0"] == 0
+								|
+							else
+								| #{sentence.cat0["0"]}
+						td.toggleDisplayC0
+							if sentence.cat0["1"] == 0
+								|
+							else
+								| #{sentence.cat0["1"]}
+						td.toggleDisplayC0
+							if sentence.cat0["2"] == 0
+								|
+							else
+								| #{sentence.cat0["2"]}
+						td.toggleDisplayC1
+							if sentence.cat1["0"] == 0
+								|
+							else
+								| #{sentence.cat1["0"]}
+						td.toggleDisplayC1
+							if sentence.cat1["1"] == 0
+								|
+							else
+								| #{sentence.cat1["1"]}
+						td.toggleDisplayC1
+							if sentence.cat1["2"] == 0
+								|
+							else
+								| #{sentence.cat1["2"]}
+						td.toggleDisplayC2
+							if sentence.cat2["0"] == 0
+								|
+							else
+								| #{sentence.cat2["0"]}
+						td.toggleDisplayC2
+							if sentence.cat2["1"] == 0
+								|
+							else
+								| #{sentence.cat2["1"]}
+						td.toggleDisplayC2
+							if sentence.cat2["2"] == 0
+								|
+							else
+								| #{sentence.cat2["2"]}
+block javascript
+	script(src="/js/admin.js")

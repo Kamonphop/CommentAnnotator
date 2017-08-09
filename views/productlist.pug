@@ -1,0 +1,20 @@
+extends layout
+
+block content
+	h3(style="text-align:center")
+		| Please select one of the products below!
+	br
+	.card-columns
+		each product in products
+			.card.text-center
+				img.card-img-top.img-fluid(src=product.imagelink, alt='Card image cap', width="50%")
+				.card-block
+					h5.card-title #{product.shortname}
+					p.card-text
+						a.btn.btn-outline-primary(href='/productlist/'+product.asin, role='button') Work on it now »
+		.card.text-center
+			img.card-img-top.img-fluid(src='/img/randombox.jpg', alt='Card image cap', width="50%")
+			.card-block
+				h5.card-title Random Reviews
+				p.card-text
+					a.btn.btn-outline-primary(href='/productlist/random', role='button') Work on it now »

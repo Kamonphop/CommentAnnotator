@@ -2,11 +2,16 @@ extends layout
 
 block content
 	h4(style="text-align:center")
-		| List of Reviews!
+		| List of Reviews of #{asin}
 	nav.breadcrumb
 		a.breadcrumb-item(href='/admin') Admin Console
-		span.breadcrumb-item.active List of reviews
+		a.breadcrumb-item(href='/admin/allproducts') List of products
+		span.breadcrumb-item.active #{asin}
 	br
+	if errorMessage.length > 0
+		.alert.alert-danger-alt.alert-dismissable
+			a.close(href='#', data-dismiss='alert', aria-label='close') ×
+			strong #{errorMessage}
 	| Total of 
 	span.badge.badge-pill.badge-primary #{labeled_reviews.length} 
 	|  labeled reviews out of 
@@ -27,5 +32,5 @@ block content
 							= i+1
 						td 
 							- var reviewID = labeled_review.review_id.replace(/^"(.*)"$/, '$1');
-							a(href="/admin/allreviews/"+reviewID) #{reviewID}
+							a(href="/admin/allproducts/"+asin+"/"+reviewID) #{reviewID}
 						td #{labeled_review.num_users}
