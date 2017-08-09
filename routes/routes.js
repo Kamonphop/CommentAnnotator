@@ -1,3 +1,8 @@
+const fs = require('fs');
+const path = require('path');
+const formidable = require('formidable');
+const ObjectId = require('mongodb').ObjectID;
+
 var Comment = require('../models/comment');
 var Amzreviews = require('../models/amzreview');
 var Amzlabels = require('../models/amzlabel');
@@ -9,60 +14,121 @@ var ObjectId = require('mongodb').ObjectID;
 var Tokenizer = require('sentence-tokenizer');
 var tokenizer = new Tokenizer('Chuck');
 
-const fs = require('fs');
-const request = require('request');
+// loading data models
+const User = require('../models/user');
+const Amzreviews = require('../models/amzreview');
+const Amzlabels = require('../models/amzlabel');
+const Comment = require('../models/comment');
+const Annotation = require('../models/annotation');
+
 
 module.exports = function(app, passport) {
     // HOME PAGE
     app.get('/', function(req, res) {
         res.render('index.pug', { title: 'Comment Annotator' });
-        // simulateLoginForMe('abhi@usc.edu', '1234', req, res);
+    });
+
+    // add source code, extract comments and store in Comment collection
+    app.get('/admin/add_comments', [isLoggedIn, redirectifnotAdmin],
+        function (req, res) {
+            res.render('addcomments.pug', {
+                title: 'Code-Comments Population',
+                user : req.user
+            });
+    });
+
+
+    app.post('/admin/add_comments', function (req, res) {
+        var form = new formidable.IncomingForm();
+        const uploadDir = path.join(__dirname, '/..', '/dummy_data_comments/');
+        form.multiples = true;
+        form.keepExtensions = true;
+        form.uploadDir = uploadDir;
+        form.parse(req, function (err, fields, files) {
+            if (err) return res.status(500).json({ error: err })
+        });
+
+        form.on('fileBegin', function (name, file) {
+            const [fileName, fileExt] = file.name.split('.');
+            file.path = path.join(uploadDir, `${fileName}_${new Date().getTime()}.${fileExt}`)
+        });
+
+        form.on('file', function (name, file) {
+            fs.readFile(file.path, 'utf-8', function (err, srcText) {
+                if(err) res.send(err);
+
+                // to find all comments in current source
+                // TODO: to find the line numbers of the comments
+                // TODO: highlight lines
+
+                var commentRe = /(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)/gm;
+                var arrComments = srcText.match(commentRe);
+
+                /* TODO: first RE matches all comments, second RE matches newline
+                 
+                 while((comm_match = commentRe.exec(srcText)) !== null) {
+                     arrComments.push(comm_match);
+                     newlineOffset.push(comm_match.index);
+                 }
+
+                 var lineRe = /\n/g;
+                 var newlineOffset = [];
+                 while((nl_match = lineRe.exec(srcText)) !== null) {
+                    newlineOffset.push(nl_match.index);
+                 }
+
+                */
+
+                var newSource = new Comment();
+                newSource.src_file = file.path;
+                for (var i=0; i<arrComments.length; ++i) {
+                    newSource.comments.push({ text: arrComments[i] });
+                }
+                newSource.save( function () {
+                    if(err)
+                        res.send(err);
+                    else {
+                        req.flash('success','Saved new source file to the database!')
+                        res.redirect('back')
+                    }
+                })
+            })
+        })
     });
 
 
     // code comments annotation index page
-    app.get('/codecomments', (req, res) => {
-        fs.readFile('data-test-cc/test.java', 'utf-8', (err, data) => {
-            if(err) { return console.log(err); }
-
-            var re = /(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)/gm;
-            var arrComments = data.match(re);
-
-            res.render('codecomments.pug',{
-                user: req.user,
-                srcCodeContent: data,
-                commentList : arrComments
-            });
-        });
-    });
+    app.get('/codecomments', isLoggedIn, function (req, res) {
+        Comment.find({}, function (err, docs) {
+            if(err) return next(err);
+            res.render('codecomments.pug', {
+                user        : req.user,
+                sourceData  : docs
+            })
+        })
+    })
 
 
-    app.post('/addAnnotation', (req, res) => {
-        console.log('form submitted!');
-        // res.send(JSON.parse(req.body.dataJson));
+    // how to submit the annotation once marked by user
+    app.post('/addAnnotation', function (req, res) {
+        var userActivity = JSON.parse(req.body.activityData);
+        var user_id = userActivity.user_id;
+        var user_comments = userActivity.comments;
+        var updatedAct = [];
+        for (var item in user_comments) {
+                for (var doc in user_comments[item]) {
+                    if (doc === '_src' || doc === '_comment')
+                        user_comments[item][doc] = ObjectId(user_comments[item][doc]);
+                }
+        }
 
-        User.findOne({ 'local.email': 'abhi@usc.edu' }, function (err, user) {
-            if (err)
-                return next(err);
-
-            var bodyData = JSON.parse(req.body.dataJson);
-            // var newComment = new Comment();
-
-            // for (var i in bodyData.comments) {
-
-            var newUser = new User();
-            // newUser = user;
-            newUser['annotated']['text'] = bodyData.comments[0].text;
-            newUser['annotated']['category'] = bodyData.comments[0].label;
-
-            console.log(newUser.annotated);
-
-            newUser.save(function(err, newuser) {
-                if (err)
-                    throw err;
-                res.send(newuser);
-            });
-            // }
+        // inserts record with the user-id or updates existing document
+        Annotation.findByIdAndUpdate(user_id, { $set: { annotated: user_comments } }, {
+            new: true,
+            upsert: true
+        }, function (err, anno) {
+            if (err) return res.send(err);
+            res.send(anno);
         });
     });
 
@@ -105,15 +171,9 @@ module.exports = function(app, passport) {
 
 
     // PROFILE SECTION =====================
-    // protected section, must be logged in, using route middleware to verify
     app.get('/profile', isLoggedIn , function(req, res) {
-        Comment.find({}, 'text', (err, docs) => {
-            if(err)
-                return next(err);
-            res.render('profile.pug', {
-                user : req.user, // get the user out of session and pass to template
-                commentsList : docs
-            });
+        res.render('profile.pug', {
+            user : req.user
         });
     });
 
@@ -313,6 +373,11 @@ module.exports = function(app, passport) {
             // Amzlabels.find({review_id: object_review_id}).distinct('user_id', function(err,ids){
                 // Amzlabels.find({review_id: object_review_id, user_id:{$in : ids}},function(err,result) {
             Amzlabels.find({review_id: object_review_id},function(err,result) {
+                console.log(result);
+                rev = review[0];
+                tokenizer.setEntry(rev.reviewText);
+                sentences = tokenizer.getSentences();
+                getStatisticsOfReview(sentences,result);
                 //if can't find record
                 if(review.length == 0){
                     var rev = {};
@@ -325,11 +390,13 @@ module.exports = function(app, passport) {
                     var sentences = tokenizer.getSentences();
                     var stats = getStatisticsOfReview(sentences,result);
                 }
-                res.render('review.pug',{
+
+              res.render('review.pug',{
                     user : req.user,
                     review: rev,
                     asin: req.params.asin_id,
                     sentences: sentences,
+                    labeled_review_data: result
                     labeled_review_data: stats,
                     errorMessage: req.flash('error')
                 });
@@ -452,13 +519,17 @@ function getStatisticsOfReview(sentences,labeled_review){
     for(var i = 0; i<sentences.length;i++){
         var sentence = {};
         sentence["sentenceText"] = sentences[i];
-        sentence["bigcat"] = {"0":0, "1":0, "2":0};
-        sentence["cat0"] = {"0":0, "1":0, "2":0};
-        sentence["cat1"] = {"0":0, "1":0, "2":0};
-        sentence["cat2"] = {"0":0, "1":0, "2":0};
+        sentence["label"] = {"0":NaN, "1":NaN, "2":NaN};
+        sentence["cat0"] = {"0":NaN, "1":NaN, "2":NaN};
+        sentence["cat1"] = {"0":NaN, "1":NaN, "2":NaN};
+        sentence["cat2"] = {"0":NaN, "1":NaN, "2":NaN};
         rearray.push(sentence);
     }
+    console.log(rearray);
     for(var i = 0; i<labeled_review.length;i++){
+        sent_labels = labeled_review[i].sent_labels;
+        for(var j = 0; j<sent_labels; j++){
+
         //for Big-category
         var sent_labels = labeled_review[i].sent_labels;
         for(var j = 0; j<sent_labels.length; j++){
@@ -492,7 +563,6 @@ function getStatisticsOfReview(sentences,labeled_review){
                 rearray[sentenceIndex][catIndex][category] +=1;
             }
         }
-        //TODO: for sentiment analysis below:
+        console.log(sent_labels);
     }
-    return rearray;
 }

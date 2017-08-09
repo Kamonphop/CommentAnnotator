@@ -7,8 +7,7 @@ var userSchema = mongoose.Schema({
         email : String,
         password : String,
         isAdmin : Boolean
-    },
-    annotated : mongoose.Schema.Types.Mixed
+    }
 });
 
 // methods ======================

@@ -1,5 +1,3 @@
-$("textarea").height( $("textarea")[0].scrollHeight);
-
 num_sentence = $('.classifysentence').length;
 
 $('.choice_hidden').hide();
