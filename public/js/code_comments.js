@@ -25,8 +25,9 @@ $(document).ready(function() {
             url: filename,
             async: true,
             success: function(data) {
-                $('#myCodeFrame').html(data);
-                Prism.highlightElement($('#myCodeFrame')[0]);
+                var $myCodeFrame = $("#myCodeFrame");
+                $myCodeFrame.html(data);
+                Prism.highlightElement($myCodeFrame[0]);
                 workingComments = sourceObj[idx].comments;
             }
         });
@@ -46,6 +47,7 @@ $(document).ready(function() {
         var i = nextIdx('source', counters, sourceObj);
         loadSourceText(i).done(function() {
             $('#myComment').html(workingComments[0].text);
+            counters.resetCom();
         });
     });
 
@@ -53,17 +55,18 @@ $(document).ready(function() {
         var i = prevIdx('source', counters, sourceObj);
         loadSourceText(i).done(function() {
             $('#myComment').html(workingComments[0].text);
+            counters.resetCom();
         });
     });
 
     function nextIdx(flag, counters, theList) {
         switch (flag) {
             case 'comment':
-                if (counters.comment == theList.length-1) return counters.resetCom();
+                if (counters.comment === theList.length-1) return counters.resetCom();
                 return counters.incrCom();
                 break;
             case 'source':
-                if (counters.src == theList.length-1) return counters.resetSrc();
+                if (counters.src === theList.length-1) return counters.resetSrc();
                 return counters.incrSrc();
                 break;
         }
@@ -72,11 +75,11 @@ $(document).ready(function() {
     function prevIdx(flag, counters, theList) {
         switch (flag) {
             case 'comment':
-                if (counters.comment == 0) return counters.endCom(theList);
+                if (counters.comment === 0) return counters.endCom(theList);
                 return counters.decrCom();
                 break;
             case 'source':
-                if (counters.src == 0) return counters.endSrc(theList);
+                if (counters.src === 0) return counters.endSrc(theList);
                 return counters.decrSrc();
                 break;
         }

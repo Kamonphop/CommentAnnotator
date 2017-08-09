@@ -51,10 +51,26 @@ module.exports = function(app, passport) {
                 if(err) res.send(err);
 
                 // to find all comments in current source
-                var re = /(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)/gm;
-                var arrComments = srcText.match(re);
                 // TODO: to find the line numbers of the comments
                 // TODO: highlight lines
+
+                var commentRe = /(\/\*([^*]|[\r\n]|(\*+([^*\/]|[\r\n])))*\*+\/)|(\/\/.*)/gm;
+                var arrComments = srcText.match(commentRe);
+
+                /* TODO: first RE matches all comments, second RE matches newline
+                 
+                 while((comm_match = commentRe.exec(srcText)) !== null) {
+                     arrComments.push(comm_match);
+                     newlineOffset.push(comm_match.index);
+                 }
+
+                 var lineRe = /\n/g;
+                 var newlineOffset = [];
+                 while((nl_match = lineRe.exec(srcText)) !== null) {
+                    newlineOffset.push(nl_match.index);
+                 }
+
+                */
 
                 var newSource = new Comment();
                 newSource.src_file = file.path;
@@ -65,7 +81,6 @@ module.exports = function(app, passport) {
                     if(err)
                         res.send(err);
                     else {
-                        console.log("Data saved");
                         req.flash('success','Saved new source file to the database!')
                         res.redirect('back')
                     }
@@ -95,7 +110,7 @@ module.exports = function(app, passport) {
         var updatedAct = [];
         for (var item in user_comments) {
                 for (var doc in user_comments[item]) {
-                    if (doc=='_src' || doc=='_comment')
+                    if (doc === '_src' || doc === '_comment')
                         user_comments[item][doc] = ObjectId(user_comments[item][doc]);
                 }
         }
